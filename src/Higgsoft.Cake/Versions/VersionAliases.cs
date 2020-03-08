@@ -8,6 +8,7 @@ using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Common.Tools.NuGet.Pack;
 using Cake.Core;
 using Cake.Core.Annotations;
+using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
 using Higgsoft.Cake.ReleaseNotes;
@@ -21,7 +22,7 @@ namespace Higgsoft.Cake.Versions
     public static class VersionAliases
     {
         internal const string VersionLinePattern
-            = @"^#+\s*(?<major>\d+)\.<?<minor>\d+)\/(?<patch>\d+)$";
+            = @"^#+\s*(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$";
 
 
         /// <summary>
@@ -82,11 +83,17 @@ namespace Higgsoft.Cake.Versions
             var lines = File.ReadLines(pathToFile.FullPath);
 
             if (!lines.Any())
+            {
+                context.Log.Information($"No lines in {pathToFile}");
                 return new Version(0, 0, 1);
+            }
 
             var match = Regex.Match(lines.First(), VersionLinePattern);
             if (!match.Success)
+            {
+                context.Log.Information($"Unable to parse version from: {lines.First()}");
                 return new Version(0, 0, 1);
+            }
 
             return new Version(
                 int.Parse(match.Groups["major"].Value),

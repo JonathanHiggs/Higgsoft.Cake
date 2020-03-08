@@ -4,6 +4,7 @@
 
 // Packages //
 #addin nuget:?package=Cake.Git
+#addin nuget:?package=Higgsoft.Cake
 
 
 //////////////////////////
@@ -28,7 +29,7 @@ var solution            = "Higgsoft.Cake";
 var project             = solution;
 
 var root                = GitFindRootFromPath(MakeAbsolute(Directory(".")));
-var solutionDir         = root;
+var solutionDir         = MakeAbsolute(Directory($"{root}/src"));
 var projectDir          = MakeAbsolute(Directory($"{solutionDir}/{project}"));
 var publishDir          = MakeAbsolute(Directory($"{root}/publish"));
 var nugetDir            = MakeAbsolute(Directory($"{root}/nuget"));
@@ -43,12 +44,17 @@ var releaseNotesVNext   = File($"{root}/ReleaseNotes.vnext.md");
 // Variables & Config
 ////////////////////////
 
+var checkSettings = new CheckSettings {
+    GitRoot             = root,
+    StagedChanges       = checkStaged,
+    UncommittedChanges  = checkUncommitted,
+    UntrackedFiles      = checkUntracked,
+    RequireReleaseNotes = requireReleaseNotes
+};
+
 var restoreSettings = new DotNetCoreRestoreSettings {};
 
 var msBuildSettings = new DotNetCoreMSBuildSettings {};
-msBuildSettings.SetVersion("0.1.0");
-msBuildSettings.SetFileVersion("0.1.0");
-msBuildSettings.SetInformationalVersion("0.1.0");
 
 var buildSettings = new DotNetCoreBuildSettings {
     Configuration       = configuration,
@@ -66,7 +72,6 @@ var publishSettings = new DotNetCorePublishSettings {
 var packSettings = new NuGetPackSettings {
     Id                  = solution,
     Title               = solution,
-    Version             = "0.1.0",
     Authors             = new [] { "Jonathan Higgs <jonathan.higgs.11@mail.wbs.ac.uk>" },
     Owners              = new [] { "Jonathan Higgs <jonathan.higgs.11@mail.wbs.ac.uk>" },
     Description         = "Cake build tools for automated .Net builds",
@@ -81,10 +86,16 @@ var packSettings = new NuGetPackSettings {
     Properties = new Dictionary<string, string> {
         { "Configuration", configuration }
     },
-    Dependencies        = new [] {
-        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0" },
-        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0" },
-        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0" },
+    Dependencies        = new [] {      // This is horrible
+        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "net472" },
+        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "net472" },
+        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "net472" },
+        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "netstandard2.0" },
+        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "netstandard2.0" },
+        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "netstandard2.0" },
+        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "netcoreapp3.1" },
+        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "netcoreapp3.1" },
+        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "netcoreapp3.1" },
     }
 };
 
@@ -109,12 +120,57 @@ Teardown(context => {
 // Tasks
 ////////////////////////
 
-Task("Clean")
+Task("Info")
     .Does(() => {
-        DotNetCoreClean(solutionFile);
+        Information( "-- Arguments");
+        Information($"target                    {target}");
+        Information($"configuration             {configuration}");
+        Information($"check-staged              {checkStaged}");
+        Information($"check-uncommitted         {checkUncommitted}");
+        Information($"check-untracked           {checkUntracked}");
+        Information($"require-release-notes     {requireReleaseNotes}");
+        Information("\n-- Files & Directories");
+        Information($"solution                  {solution}");
+        Information($"project                   {project}");
+        Information($"root                      {root}");
+        Information($"solutionDir               {solutionDir}");
+        Information($"projectDir                {projectDir}");
+        Information($"publishDir                {publishDir}");
+        Information($"nugetDir                  {nugetDir}");
+        Information($"solutionFile              {solutionFile}");
+        Information($"projectFile               {projectFile}");
+        Information($"releaseNotes              {releaseNotes}");
+        Information($"releaseNotesVNext         {releaseNotesVNext}");
     });
 
+
+Task("Check")
+    .IsDependentOn("Info")
+    .Does(() => Check(checkSettings));
+
+
+Task("Version")
+    .IsDependentOn("Check")
+    .Does(() => {
+        var version = ParseAndUpdateVersion(
+            releaseNotesVNext,
+            dotNetCoreMSBuildSettings: msBuildSettings,
+            nuGetPackSettings: packSettings);
+
+        Information(version.ToString());
+    });
+
+
+Task("Clean")
+    .IsDependentOn("Version")
+    .Does(() => {
+        DotNetCoreClean(solutionFile);
+        CleanDirectory(publishDir);
+    });
+
+
 Task("Restore")
+    .IsDependentOn("Clean")
     .Does(() => {
         DotNetCoreRestore(solutionFile, restoreSettings);
     });
@@ -149,7 +205,7 @@ Task("Pack")
     .IsDependentOn("Publish")
     .Does(() => {
         var files =
-            GetFiles(publishDir + "/**/Higgsoft.Cake.dll")
+            GetFiles(publishDir + $"/**/{project}.dll")
                 .Select(f => f.FullPath.Substring(publishDir.FullPath.Length + 1))
                 .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f}" });
 
