@@ -9,6 +9,8 @@ using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 using Cake.Git;
 
+using Higgsoft.Cake.ReleaseNotes;
+
 namespace Higgsoft.Cake.Check
 {
     /// <summary>
@@ -18,7 +20,8 @@ namespace Higgsoft.Cake.Check
     /// <param name="context">Cake runtime context</param>
     /// <param name="checkSettings">Settings for running the pre-build checks</param>
     /// <returns></returns>
-    public delegate ICheckResult CheckAction(ICakeContext context, CheckSettings checkSettings);
+    public delegate ICheckResult CheckAction(
+        ICakeContext context, CheckSettings checkSettings);
 
 
     /// <summary>
@@ -92,7 +95,8 @@ namespace Higgsoft.Cake.Check
             var errorMessage = new StringBuilder();
 
             checkSettings.GitRoot = checkSettings.GitRoot
-                ?? context.GitFindRootFromPath(new DirectoryPath(".").MakeAbsolute(context.Environment));
+                ?? context.GitFindRootFromPath(
+                    new DirectoryPath(".").MakeAbsolute(context.Environment));
 
             var checks = new List<CheckAction> {
                 CheckStagedChanges,
@@ -261,7 +265,7 @@ namespace Higgsoft.Cake.Check
             if (!checkSettings.RequireReleaseNotes)
                 return new CheckSkipped();
 
-            if (AnyReleaseNotes(checkSettings.ReleaseNotesVNext))
+            if (context.AnyReleaseNotes(checkSettings.ReleaseNotesVNext))
                 return new CheckPassed();
 
             return CheckFailed.WithReason(
