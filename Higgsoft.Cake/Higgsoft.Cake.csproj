@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cake.Common" Version="0.37.0" />
+    <PackageReference Include="Cake.Core" Version="0.37.0" />
+    <PackageReference Include="Cake.Git" Version="0.21.0" />
+  </ItemGroup>
+
+</Project>
