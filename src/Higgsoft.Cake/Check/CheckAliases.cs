@@ -40,7 +40,6 @@ namespace Higgsoft.Cake.Check
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static void Check(this ICakeContext context)
             => context.Check(new CheckSettings());
 
@@ -62,7 +61,6 @@ namespace Higgsoft.Cake.Check
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static void Check(
             this ICakeContext context,
             Action<CheckSettings> configSettings)
@@ -88,7 +86,6 @@ namespace Higgsoft.Cake.Check
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static void Check(this ICakeContext context, CheckSettings checkSettings)
         {
             var anyErrors = false;
@@ -142,7 +139,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings">Settings for running the pre-build checks</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckStagedChanges(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -165,7 +161,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings">Settings for running the pre-build checks</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckUncommittedChanges(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -188,7 +183,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings">Settings for running the pre-build checks</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckUntrackedFiles(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -211,7 +205,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings">Settings for running the pre-build checks</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckReleaseNotesFileExists(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -219,11 +212,11 @@ namespace Higgsoft.Cake.Check
             if (!checkSettings.RequireReleaseNotes)
                 return new CheckSkipped();
 
-            if (context.FileExists(checkSettings.ReleaseNotes))
+            if (context.FileExists(checkSettings.ReleaseNotesFile))
                 return new CheckPassed();
 
             return CheckFailed.WithReason(
-                $"Unable to find release notes file: {checkSettings.ReleaseNotes}");
+                $"Unable to find release notes file: {checkSettings.ReleaseNotesFile}");
         }
 
 
@@ -234,7 +227,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings">Settings for running the pre-build checks</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckReleaseNotesVNextFileExists(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -242,11 +234,11 @@ namespace Higgsoft.Cake.Check
             if (!checkSettings.RequireReleaseNotes)
                 return new CheckSkipped();
 
-            if (context.FileExists(checkSettings.ReleaseNotesVNext))
+            if (context.FileExists(checkSettings.ReleaseNotesVNextFile))
                 return new CheckPassed();
 
             return CheckFailed.WithReason(
-                $"Unable to find release notes file: {checkSettings.ReleaseNotesVNext}");
+                $"Unable to find release notes file: {checkSettings.ReleaseNotesVNextFile}");
         }
 
 
@@ -257,7 +249,6 @@ namespace Higgsoft.Cake.Check
         /// <param name="checkSettings"></param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Checks")]
         public static ICheckResult CheckNewReleaseNotes(
             this ICakeContext context,
             CheckSettings checkSettings)
@@ -265,11 +256,11 @@ namespace Higgsoft.Cake.Check
             if (!checkSettings.RequireReleaseNotes)
                 return new CheckSkipped();
 
-            if (context.AnyReleaseNotes(checkSettings.ReleaseNotesVNext))
+            if (context.AnyReleaseNotes(checkSettings.ReleaseNotesVNextFile))
                 return new CheckPassed();
 
             return CheckFailed.WithReason(
-                $"No new release notes found in {checkSettings.ReleaseNotesVNext}");
+                $"No new release notes found in {checkSettings.ReleaseNotesVNextFile}");
         }
     }
 }

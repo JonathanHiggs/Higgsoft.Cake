@@ -38,7 +38,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="releaseNotesSettings">Release notes settings to be updated</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static Version ParseAndUpdateVersion(
             this ICakeContext context,
             FilePath pathToFile,
@@ -72,7 +71,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="pathToFile">Path to the file to be parsed</param>
         /// <returns></returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static Version ParseVersionFrom(
             this ICakeContext context,
             FilePath pathToFile)
@@ -109,7 +107,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="version">Version number to be set</param>
         /// <param name="settings">Setting to be updated</param>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static void UpdateAssemblyInfoVersion(
             this ICakeContext context,
             Version version,
@@ -131,7 +128,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="version">Version number to be set</param>
         /// <param name="settings">Setting to be updated</param>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static void UpdateDotNetCoreBuildVersion(
             this ICakeContext context,
             Version verson,
@@ -151,7 +147,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="version">Version number to be set</param>
         /// <param name="settings">Setting to be updated</param>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static void UpdateNuGetPackVersion(
             this ICakeContext context,
             Version verson,
@@ -171,7 +166,6 @@ namespace Higgsoft.Cake.Versions
         /// <param name="version">Version number to be set</param>
         /// <param name="settings">Setting to be updated</param>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Version")]
         public static void UpdateReleaseNotesVersion(
             this ICakeContext context,
             Version verson,

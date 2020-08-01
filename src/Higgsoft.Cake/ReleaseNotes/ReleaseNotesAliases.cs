@@ -36,7 +36,6 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static bool ReleaseNotesUpdated(
             this ICakeContext context,
             ReleaseNotesSettings settings)
@@ -51,7 +50,6 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// <param name="nuGetPackSettings">NuGet pack settings to add release notes to</param>
         /// <returns>Collection of release notes with markdown formatting stripped out</returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static ICollection<string> UpdateReleaseNotes(
             this ICakeContext context,
             ReleaseNotesSettings releaseNotesSettings,
@@ -90,7 +88,6 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// <param name="pathToFile">Path to the file</param>
         /// <returns>true if the file contains release notes; false otherwise</returns>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static bool AnyReleaseNotes(this ICakeContext context, FilePath pathToFile)
         {
             if (!context.FileExists(pathToFile))
@@ -108,7 +105,6 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// <param name="releaseNotesVNext">Path to the next-version release notes
         /// file</param>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static void EnsureReleaseNotesExist(
             this ICakeContext context,
             FilePath releaseNotes,

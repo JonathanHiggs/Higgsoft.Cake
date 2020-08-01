@@ -26,7 +26,6 @@ namespace Higgsoft.Cake.Commit
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Commit")]
         public static void CommitChanges(this ICakeContext context, CommitSettings commitSettings)
         {
             if (!commitSettings.CommitChanges)
@@ -83,7 +82,6 @@ namespace Higgsoft.Cake.Commit
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        [CakeAliasCategory("Higgsoft.Commit")]
         public static void RevertChanges(this ICakeContext context, RevertSettings revertSettings)
         {
             var files = new[] {

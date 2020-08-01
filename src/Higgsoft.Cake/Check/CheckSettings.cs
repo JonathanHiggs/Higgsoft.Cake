@@ -41,14 +41,14 @@ namespace Higgsoft.Cake.Check
         /// <summary>
         /// Gets and sets the path to the release notes file
         /// </summary>
-        public FilePath ReleaseNotes { get; set; }
+        public FilePath ReleaseNotesFile { get; set; }
             = new FilePath("./ReleaseNotes.md");
 
 
         /// <summary>
         /// Gets and sets the path to the next version release notes file
         /// </summary>
-        public FilePath ReleaseNotesVNext { get; set; }
+        public FilePath ReleaseNotesVNextFile { get; set; }
             = new FilePath("./ReleaseNotes.vnext.md");
     }
 }
