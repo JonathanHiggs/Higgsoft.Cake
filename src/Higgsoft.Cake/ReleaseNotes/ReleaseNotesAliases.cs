@@ -28,14 +28,13 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="settings">Settings with the path to the release notes files</param>
-        /// <example>
-        /// <code>
-        /// Task("CheckReleaseNotes")
-        ///     .Does(() => ReleaseNotesUpdated(settings)
-        /// </code>
-        /// </example>
         /// <returns>true if the there are any release notes in the v-next file; false
         /// otherwise</returns>
+        /// <example>
+        /// <code>
+        /// Task("CheckReleaseNotes").Does(() => ReleaseNotesUpdated(settings)
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static bool ReleaseNotesUpdated(
@@ -48,11 +47,9 @@ namespace Higgsoft.Cake.ReleaseNotes
         /// Prepends new release notes to the main release notes file
         /// </summary>
         /// <param name="context">Cake runtime context</param>
-        /// <param name="releaseNotesSettings">Settings with the path to the release
-        /// notes files</param>
-        /// <param name="nuGetPackSettings">NuGet pack settings to add release notes
-        /// to</param>
-        /// <returns></returns>
+        /// <param name="releaseNotesSettings">Settings with the path to the release notes files</param>
+        /// <param name="nuGetPackSettings">NuGet pack settings to add release notes to</param>
+        /// <returns>Collection of release notes with markdown formatting stripped out</returns>
         [CakeMethodAlias]
         [CakeAliasCategory("Higgsoft.ReleaseNotes")]
         public static ICollection<string> UpdateReleaseNotes(
@@ -100,6 +97,28 @@ namespace Higgsoft.Cake.ReleaseNotes
                 return false;
 
             return FilterLines(File.ReadLines(pathToFile.FullPath)).Any();
+        }
+
+
+        /// <summary>
+        /// Ensures that the release notes files exist at the supplied file paths
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="releaseNotes">Path to the release notes file</param>
+        /// <param name="releaseNotesVNext">Path to the next-version release notes
+        /// file</param>
+        [CakeMethodAlias]
+        [CakeAliasCategory("Higgsoft.ReleaseNotes")]
+        public static void EnsureReleaseNotesExist(
+            this ICakeContext context,
+            FilePath releaseNotes,
+            FilePath releaseNotesVNext)
+        {
+            if (!context.FileExists(releaseNotes))
+                File.WriteAllText(releaseNotes.FullPath, "");
+
+            if (!context.FileExists(releaseNotesVNext))
+                File.WriteAllText(releaseNotesVNext.FullPath, "## 0.1.0");
         }
 
 

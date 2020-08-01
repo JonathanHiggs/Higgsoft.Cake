@@ -111,9 +111,7 @@ Setup(context => {
     EnsureDirectoryExists(nugetDir);
 });
 
-Teardown(context => {
-
-});
+Teardown(context => { });
 
 
 //////////////////////////
