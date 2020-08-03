@@ -262,9 +262,6 @@ Task("AliasTests")
 
         Information("Test - netstandard20");
         DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test-netstandard20.cake");
-
-        Information("Test - netcoreapp31");
-        DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test-netcoreapp31.cake");
     });
 
 
@@ -293,7 +290,7 @@ Task("RecipeTests")
 ////////////////////////
 
 Task("Default")
-    .IsDependentOn("RecipeTests")
+    .IsDependentOn("Push")
     .Does(() => Information("Default build completed"));
 
 

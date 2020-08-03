@@ -208,12 +208,14 @@ namespace Higgsoft.Cake.Recipes
         /// Gets and sets a flag that determines whether changes to the git repository is pushed to
         /// a remote
         /// </summary>
+        // ToDo: Move to build level
         public bool PushToRemote { get; set; } = true;
 
 
         /// <summary>
         /// Gets and sets the name of the git remote
         /// </summary>
+        // ToDo: Move to build level
         public string RemoteName { get; set; } = "origin";
 
         #endregion
