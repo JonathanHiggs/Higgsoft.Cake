@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 		..\ReleaseNotes.md = ..\ReleaseNotes.md
 		..\ReleaseNotes.vnext.md = ..\ReleaseNotes.vnext.md
+		..\test-net48.cake = ..\test-net48.cake
+		..\test-netcoreapp31.cake = ..\test-netcoreapp31.cake
+		..\test-standard20.cake = ..\test-standard20.cake
+		..\test.cake = ..\test.cake
 	EndProjectSection
 EndProject
 Global

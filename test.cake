@@ -1,0 +1,22 @@
+﻿//////////////////////////
+// Tests
+////////////////////////
+
+Task("Test")
+    .Does(() => { });
+
+
+//////////////////////////
+// Targets
+////////////////////////
+
+Task("AllTests")
+    .IsDependentOn("Test")
+    .Does(() => Information("Cake tests completed"));
+
+
+//////////////////////////
+// Invoke
+////////////////////////
+
+RunTarget("AllTests");

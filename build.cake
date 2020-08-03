@@ -4,7 +4,8 @@
 
 // Packages //
 #addin nuget:?package=Cake.Git
-#addin nuget:?package=Higgsoft.Cake
+#addin nuget:?package=Cake.FileHelpers
+#addin nuget:?package=Higgsoft.Cake&version=0.0.1
 
 
 //////////////////////////
@@ -87,9 +88,9 @@ var packSettings = new NuGetPackSettings {
         { "Configuration", configuration }
     },
     Dependencies        = new [] {      // This is horrible
-        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "net472" },
-        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "net472" },
-        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "net472" },
+        new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "net48" },
+        new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "net48" },
+        new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "net48" },
         new NuSpecDependency { Id = "Cake.Common", Version = "0.37.0", TargetFramework = "netstandard2.0" },
         new NuSpecDependency { Id = "Cake.Core", Version = "0.37.0", TargetFramework = "netstandard2.0" },
         new NuSpecDependency { Id = "Cake.Git", Version = "0.21.0", TargetFramework = "netstandard2.0" },
@@ -99,7 +100,9 @@ var packSettings = new NuGetPackSettings {
     }
 };
 
-var frameworks = new [] { "net472", "netstandard2.0", "netcoreapp3.1" };
+var frameworks = new [] { "net48", "netstandard2.0", "netcoreapp3.1" };
+
+var version = new Higgsoft.Cake.Versions.Version(0, 0, 1);
 
 
 //////////////////////////
@@ -150,10 +153,16 @@ Task("Check")
 Task("Version")
     .IsDependentOn("Check")
     .Does(() => {
-        var version = ParseAndUpdateVersion(
+        version = ParseAndUpdateVersion(
             releaseNotesVNext,
             dotNetCoreMSBuildSettings: msBuildSettings,
             nuGetPackSettings: packSettings);
+
+        // Update recipe addin version numbers
+        ReplaceRegexInFiles(
+            "./**/*recipe.cake",
+            "Higgsoft\\.Cake&version=\\d+\\.\\d+\\.\\d+",
+            $"Higgsoft.Cake&version={version.ToString()}");
 
         Information(version.ToString());
     });
@@ -199,17 +208,49 @@ Task("Publish")
     });
 
 
-Task("Pack")
+Task("Package")
     .IsDependentOn("Publish")
     .Does(() => {
-        var files =
+        var assemblyFiles =
             GetFiles(publishDir + $"/**/{project}.dll")
+                .Union(GetFiles(publishDir + $"/**/{project}.pdb"))
+                .Where(f => f.FullPath.Contains($"{project}.") && !f.FullPath.Contains("/runtimes/"))
                 .Select(f => f.FullPath.Substring(publishDir.FullPath.Length + 1))
                 .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f}" });
 
-        packSettings.Files = files.ToArray();
+        var recipeScripts =
+            GetFiles("./src/**/*recipe.cake")
+                .Select(f => MakeAbsolute(f))
+                .Select(f => new NuSpecContent { Source = f.FullPath, Target = $"content/{f.GetFilename()}" });
+
+        packSettings.Files =
+            assemblyFiles
+            .Union(recipeScripts)
+            .ToArray();
 
         NuGetPack(packSettings);
+    });
+
+
+Task("CakeTests")
+    .IsDependentOn("Package")
+    .Does(() => {
+        var package = File($"{nugetDir}/{project}.{version}.nupkg");
+        var addinDir = Directory($"{root}/tools/Addins/{project}/{project}");
+
+        if (DirectoryExists(addinDir))
+            DeleteDirectory(addinDir, new DeleteDirectorySettings { Recursive = true, Force = true });
+
+        Unzip(package, addinDir);
+
+        Information("Test - net48");
+        CakeExecuteScript("./test-net48.cake");
+
+        Information("Test - netstandard20");
+        DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test-netstandard20.cake");
+
+        Information("Test - netcoreapp31");
+        DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test-netcoreapp31.cake");
     });
 
 
@@ -218,7 +259,7 @@ Task("Pack")
 ////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack")
+    .IsDependentOn("CakeTests")
     .Does(() => Information("Default build completed"));
 
 
