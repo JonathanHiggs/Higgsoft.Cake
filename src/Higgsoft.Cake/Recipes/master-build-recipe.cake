@@ -3,7 +3,7 @@
 ////////////////////
 
 #addin nuget:?package=Higgsoft.Cake&version=0.1.0
-#addin nuget:?package=Cake.Git
+#addin nuget:?package=Cake.Git&version=0.21.0
 
 using Higgsoft.Cake.Recipes;
 
@@ -17,7 +17,7 @@ Build.Configuration             = Argument("configuration",         Build.Config
 Build.Verbosity                 = Argument("verbosity",             Build.Verbosity);
 Build.Local                     = Argument("local",                 Build.Local);
 
-Build.CheckStagedChanges        = Argument("check-staged",          Build.CheckStaged);
+Build.CheckStagedChanges        = Argument("check-staged",          Build.CheckStagedChanges);
 Build.CheckUncommittedChanges   = Argument("check-uncommitted",     Build.CheckUncommittedChanges);
 Build.CheckUntrackedFiles       = Argument("check-untracked",       Build.CheckUntrackedFiles);
 

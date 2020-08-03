@@ -53,7 +53,7 @@ namespace Higgsoft.Cake.ReleaseNotes
         public static ICollection<string> UpdateReleaseNotes(
             this ICakeContext context,
             ReleaseNotesSettings releaseNotesSettings,
-            NuGetPackSettings nuGetPackSettings)
+            NuGetPackSettings nuGetPackSettings = null)
         {
             var releaseNotes =
                 FilterLines(File.ReadLines(releaseNotesSettings.ReleaseNotesVNext.FullPath)).ToList();

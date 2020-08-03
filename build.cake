@@ -100,6 +100,14 @@ var packSettings = new NuGetPackSettings {
     }
 };
 
+//var deleteSettings = new NuGetDeleteSettings {
+//    Source = "Local"
+//};
+
+var pushSettings = new NuGetPushSettings {
+    Source = "Local"
+};
+
 var frameworks = new [] { "net48", "netstandard2.0", "netcoreapp3.1" };
 
 var version = new Higgsoft.Cake.Versions.Version(0, 0, 1);
@@ -161,6 +169,12 @@ Task("Version")
         // Update recipe addin version numbers
         ReplaceRegexInFiles(
             "./**/*recipe.cake",
+            "Higgsoft\\.Cake&version=\\d+\\.\\d+\\.\\d+",
+            $"Higgsoft.Cake&version={version.ToString()}");
+
+        // Update recipe test build script version numbers
+        ReplaceRegexInFiles(
+            "./test/**/build.cake",
             "Higgsoft\\.Cake&version=\\d+\\.\\d+\\.\\d+",
             $"Higgsoft.Cake&version={version.ToString()}");
 
@@ -232,7 +246,7 @@ Task("Package")
     });
 
 
-Task("CakeTests")
+Task("AliasTests")
     .IsDependentOn("Package")
     .Does(() => {
         var package = File($"{nugetDir}/{project}.{version}.nupkg");
@@ -254,12 +268,32 @@ Task("CakeTests")
     });
 
 
+Task("Push")
+    .IsDependentOn("AliasTests")
+    .Does(() => {
+        //NuGetDelete(project, version.ToString(), deleteSettings);
+
+        var package = File($"{nugetDir}/{project}.{version}.nupkg");
+        NuGetPush(package, pushSettings);
+    });
+
+
+Task("RecipeTests")
+    .IsDependentOn("Push")
+    .Does(() => {
+        CleanDirectories(Directory("./test/**/tools"));
+
+        //DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test/dotnet-lib/build.cake");
+        CakeExecuteScript("./test/dotnet-lib/build.cake");
+    });
+
+
 //////////////////////////
 // Targets
 ////////////////////////
 
 Task("Default")
-    .IsDependentOn("CakeTests")
+    .IsDependentOn("RecipeTests")
     .Does(() => Information("Default build completed"));
 
 

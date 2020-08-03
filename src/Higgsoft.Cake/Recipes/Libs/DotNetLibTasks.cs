@@ -10,7 +10,7 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// <summary>
         /// Gets and sets the restore <see cref="CakeTaskBuilder"/>
         /// </summary>
-        public CakeTask Restore { get; set; }
+        public CakeTaskBuilder Restore { get; set; }
 
 
         /// <summary>

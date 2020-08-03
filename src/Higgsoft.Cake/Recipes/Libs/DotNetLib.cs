@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Cake.Common.Tools.DotNetCore.Build;
+using Cake.Common.Tools.DotNetCore.BuildServer;
 using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Common.Tools.DotNetCore.Publish;
 using Cake.Common.Tools.DotNetCore.Restore;
@@ -160,6 +162,17 @@ namespace Higgsoft.Cake.Recipes.Libs
             => new DotNetCoreRestoreSettings {
                 MSBuildSettings = MSBuildSettings,
                 Verbosity = Build.Verbosity.ToDotNetCoreVerbosity()
+            };
+
+
+        /// <summary>
+        /// Gets the <see cref="DotNetCoreBuildSettings"/> for the recipe
+        /// </summary>
+        public DotNetCoreBuildSettings BuildSettings
+            => new DotNetCoreBuildSettings {
+                Configuration = Build.Configuration,
+                NoRestore = true,
+                MSBuildSettings = MSBuildSettings
             };
 
 

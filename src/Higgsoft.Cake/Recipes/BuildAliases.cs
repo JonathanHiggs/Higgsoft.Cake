@@ -83,7 +83,7 @@ namespace Higgsoft.Cake.Recipes
             {
                 context.Information("Errored Builds:");
                 foreach (var recipe in errored)
-                    context.Information($"{recipe} - {recipe.ErroredTaskName}/n{recipe.Exception.Message}");
+                    context.Information($"{recipe} - {recipe.ErroredTaskName}\n{recipe.Exception.Message}");
                 context.Information("");
             }
         }

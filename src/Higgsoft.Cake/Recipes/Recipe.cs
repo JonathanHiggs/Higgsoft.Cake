@@ -249,9 +249,10 @@ namespace Higgsoft.Cake.Recipes
 
 
         /// <summary>
-        /// Gets the <see cref="AssemblyInfoSettings"/> for the recipe
+        /// Gets the <see cref="global::Cake.Common.Solution.Project.Properties.AssemblyInfoSettings"/>
+        /// for the recipe
         /// </summary>
-        public AssemblyInfoSettings AssmeblyInfoSettings
+        public AssemblyInfoSettings AssemblyInfoSettings
             => new AssemblyInfoSettings {
                 Title = !SharedAssemblyInfoFile ? Project : string.Empty,
                 Guid = !SharedAssemblyInfoFile ? Guid : string.Empty,

@@ -1,4 +1,4 @@
-﻿//////////////////////////
+//////////////////////////
 // Includes & Using
 ////////////////////////
 
@@ -18,20 +18,20 @@ AddDotNetLib(lib => {
     lib.Guid                        = "";
 
 
-    lib.SolutionDirectory           = MakeAbsolute(Directory($"./{lib.Solution}"));
+    lib.SolutionDirectory           = Directory($"{Build.GitRoot}/test/dotnet-lib");
     lib.SolutionFile                = File($"{lib.SolutionDirectory}/{lib.Solution}.sln");
     lib.ProjectFile                 = File($"{lib.SolutionDirectory}/{lib.Project}/{lib.Project}.csproj");
     lib.AssemblyInfoFile            = null;
-    lib.ReleaseNotesFile            = null;
-    lib.ReleaseNotesVNextFile       = null;
+    lib.ReleaseNotesFile            = File($"{lib.SolutionDirectory}/ReleaseNotes.md");
+    lib.ReleaseNotesVNextFile       = File($"{lib.SolutionDirectory}/ReleaseNotes.vnext.md");;
     //lib.BuildDirectory              = null;
-    lib.PublishDirectory            = MakeAbsolute(Directory("./publish"));
-    lib.NuGetDirectory              = MakeAbsolute(Directory("./nuget"));
+    lib.PublishDirectory            = Directory($"{lib.SolutionDirectory}/publish");
+    lib.NuGetDirectory              = Directory($"{lib.SolutionDirectory}/nuget");
 
     lib.SharedAssemblyInfoFile      = false;
     lib.UsePreBuildTask             = false;
     lib.UsePostBuildTask            = false;
-    lib.PrepareReleaseNotes         = false;
+    lib.PrepareReleaseNotes         = true;
     lib.UpdateAssemblyInfo          = false;
     lib.CommitChanges               = false;
     lib.TagVersion                  = false;

@@ -7,7 +7,7 @@
 #addin nuget:?package=Higgsoft.Cake&version=0.1.0
 
 using Higgsoft.Cake.Recipes;
-using Higgsoft.Cake.Recipes.Lib;
+using Higgsoft.Cake.Recipes.Libs;
 
 
 //////////////////////
@@ -39,7 +39,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
             Information($"Solution Directory        {lib.SolutionDirectory}");
             Information($"Solution File             {lib.SolutionFile}");
             Information($"Project File              {lib.ProjectFile}");
-            Information($"Assembly Info File        {lib.Assembly Info File}");
+            Information($"Assembly Info File        {lib.AssemblyInfoFile}");
             Information($"Release Notes File        {lib.ReleaseNotesFile}");
             //Information($"Build Directory           {lib.BuildDirectory}");
             Information($"Publish Directory         {lib.PublishDirectory}");
@@ -49,7 +49,9 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
             Information($"Update Assembly Info      {lib.UpdateAssemblyInfo}");
             Information($"Commit Changes            {lib.CommitChanges}");
             Information($"Tag Version               {lib.TagVersion}");
-            Information($"Push To Remote            {lib.PushToRemote} : {lib.RemoteName}");
+            Information($"Push To Remote            {lib.PushToRemote}");
+            Information($"Remote Name               {lib.RemoteName}");
+            Information($"Frameworks                {string.Join(",", lib.Frameworks)}");
         });
 
     tasks.Setup = Task($"{lib.Id}-Setup")
@@ -176,7 +178,10 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .DoesForEach(
             lib.PublishSettings,
-            settings => DotNetCorePublish(lib.ProjectFile.FullPath, settings))
+            settings => {
+                Information(settings.Framework);
+                DotNetCorePublish(lib.ProjectFile.FullPath, settings);
+        })
         .OnError(ex => {
             lib.SetError(tasks.Publish, ex);
             Error(ex);
@@ -188,10 +193,10 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => {
             lib.NuGetFiles.AddRange(
-                GetFiles($"{lib.PublishDirectory/**/{lib.Project}.dll")
-                .Where(f => f.FullPath.Contains($"{lib.Project}.") && !f.FullPath.Contains("/runtimes/"))
-                .Select(f => f.FullPath.Substring(lib.PublishDirectory.FullPath.Length + 1))
-                .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f}" }));
+                GetFiles($"{lib.PublishDirectory}/**/{lib.Project}.dll")
+                    .Where(f => f.FullPath.Contains($"{lib.Project}.") && !f.FullPath.Contains("/runtimes/"))
+                    .Select(f => f.FullPath.Substring(lib.PublishDirectory.FullPath.Length + 1))
+                    .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f}" }));
 
             NuGetPack(lib.NuGetPackSettings);
         })
