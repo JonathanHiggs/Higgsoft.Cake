@@ -67,6 +67,12 @@ namespace Higgsoft.Cake.Recipes
         /// </summary>
         public bool SharedAssemblyInfoFile { get; set; } = false;
 
+
+        /// <summary>
+        /// Gets and sets a list of release notes
+        /// </summary>
+        public List<string> ReleaseNotes { get; set; } = new List<string>();
+
         #endregion
 
 

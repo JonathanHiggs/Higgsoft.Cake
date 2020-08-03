@@ -71,31 +71,6 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         [CakeMethodAlias]
-        public static void DotNetLibCheck(this ICakeContext context, DotNetLib lib)
-        {
-            context.Check(lib.CheckSettings);
-
-            lib.SkipRemainingTasks =
-                lib.PrepareReleaseNotes && !context.ReleaseNotesUpdated(lib.ReleaseNotesSettings);
-        }
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibVersion(this ICakeContext context, DotNetLib lib)
-            => lib.Version = context.ParseVersionFrom(lib.ReleaseNotesVNextFile);
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibReleaseNotes(this ICakeContext context, DotNetLib lib)
-            => lib.ReleaseNotes.AddRange(context.UpdateReleaseNotes(lib.ReleaseNotesSettings));
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibAssemblyInfo(this ICakeContext context, DotNetLib lib)
-            => context.CreateAssemblyInfo(lib.AssemblyInfoFile, lib.AssemblyInfoSettings);
-
-
-        [CakeMethodAlias]
         public static void DotNetLibClean(this ICakeContext context, DotNetLib lib)
         {
             context.CleanDirectories($"{lib.SolutionDirectory}/**/bin/{Build.Configuration}");
@@ -120,13 +95,6 @@ namespace Higgsoft.Cake.Recipes.Libs
             => context.DotNetCoreBuild(
                 lib.SolutionFile?.FullPath ?? lib.ProjectFile.FullPath,
                 lib.BuildSettings);
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibTest(this ICakeContext context, DotNetLib lib)
-            => context.NUnit3(
-                $"{lib.SolutionDirectory}/**/bin/{Build.Configuration}/*.UnitTests.dll",
-                lib.NUnitSettings);
 
 
         [CakeMethodAlias]
@@ -166,11 +134,6 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         [CakeMethodAlias]
-        public static void DotNetLibCommit(this ICakeContext context, DotNetLib lib)
-            => context.CommitChanges(lib.CommitSettings);
-
-
-        [CakeMethodAlias]
         public static void DotNetLibPush(this ICakeContext context, DotNetLib lib)
         {
             if (Build.Local)
@@ -187,24 +150,6 @@ namespace Higgsoft.Cake.Recipes.Libs
             var file = context.File($"{lib.NuGetDirectory}/{lib.Id}.{lib.Version}.nupkg");
 
             context.NuGetPush(file.Path, lib.NuGetPushSettings);
-        }
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibCleanUp(this ICakeContext context, DotNetLib lib)
-            => context.RevertChanges(lib.RevertSettings);
-
-
-        [CakeMethodAlias]
-        public static void DotNetLibOnError(
-            this ICakeContext context,
-            DotNetLib lib,
-            CakeTaskBuilder task,
-            Exception ex)
-        {
-            // Note: Might move this for all Recipes
-            lib.SetError(task, ex);
-            context.Error(ex);
         }
     }
 }

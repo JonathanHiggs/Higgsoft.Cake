@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Cake.Common.Tools.DotNetCore.Build;
-using Cake.Common.Tools.DotNetCore.BuildServer;
 using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Common.Tools.DotNetCore.Publish;
 using Cake.Common.Tools.DotNetCore.Restore;
@@ -41,12 +40,6 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         #region Paths
-
-        ///// <summary>
-        ///// Gets and sets the path to the build directory
-        ///// </summary>
-        //public DirectoryPath BuildDirectory { get; set; }
-
 
         /// <summary>
         /// Gets and sets the path to the publish directory
@@ -137,22 +130,16 @@ namespace Higgsoft.Cake.Recipes.Libs
         public void AddDependencies(params NuSpecDependency[] dependencies)
             => NuSpecDependencies.AddRange(dependencies);
 
-
-        /// <summary>
-        /// Gets and sets a list of release notes
-        /// </summary>
-        public List<string> ReleaseNotes { get; set; } = new List<string>();
-
         #endregion
 
 
-        #region Generates
+        #region Generated
 
         /// <summary>
         /// Gets the <see cref="DotNetCoreMSBuildSettings"/> for the recipe
         /// </summary>
         public DotNetCoreMSBuildSettings MSBuildSettings
-            => new DotNetCoreMSBuildSettings();
+            => new DotNetCoreMSBuildSettings { };
 
 
         /// <summary>
