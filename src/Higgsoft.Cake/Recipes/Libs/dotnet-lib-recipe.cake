@@ -194,9 +194,13 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => {
             lib.NuGetFiles.AddRange(
                 GetFiles($"{lib.PublishDirectory}/**/{lib.Project}.dll")
+                    .Union(GetFiles($"{lib.PublishDirectory}/**/{lib.Project}.pdb"))
                     .Where(f => f.FullPath.Contains($"{lib.Project}.") && !f.FullPath.Contains("/runtimes/"))
                     .Select(f => f.FullPath.Substring(lib.PublishDirectory.FullPath.Length + 1))
                     .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f}" }));
+
+            foreach (var file in lib.NuGetFiles)
+                Information(file.Source);
 
             NuGetPack(lib.NuGetPackSettings);
         })

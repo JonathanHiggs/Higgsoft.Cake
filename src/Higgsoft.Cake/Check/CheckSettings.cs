@@ -50,5 +50,8 @@ namespace Higgsoft.Cake.Check
         /// </summary>
         public FilePath ReleaseNotesVNextFile { get; set; }
             = new FilePath("./ReleaseNotes.vnext.md");
+
+
+        // ToDo: list of additional check methods
     }
 }

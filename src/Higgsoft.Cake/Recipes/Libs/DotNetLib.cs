@@ -31,7 +31,7 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// </summary>
         /// <param name="frameworks"></param>
         public void AddFrameworks(params string[] frameworks)
-            => Frameworks.AddRange(Frameworks);
+            => Frameworks.AddRange(frameworks);
 
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace Higgsoft.Cake.Recipes.Libs
                 Tags = Tags,
                 Symbols = Symbols,
                 Files = NuGetFiles,
-                //BasePath = BuildDirectory,
+                BasePath = PublishDirectory,
                 OutputDirectory = NuGetDirectory,
                 RequireLicenseAcceptance = false,
                 Properties = new Dictionary<string, string> {
