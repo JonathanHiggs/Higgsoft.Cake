@@ -40,10 +40,10 @@ namespace Higgsoft.Cake.Recipes.Libs
 
         #region Paths
 
-        /// <summary>
-        /// Gets and sets the path to the build directory
-        /// </summary>
-        public DirectoryPath BuildDirectory { get; set; }
+        ///// <summary>
+        ///// Gets and sets the path to the build directory
+        ///// </summary>
+        //public DirectoryPath BuildDirectory { get; set; }
 
 
         /// <summary>
@@ -146,10 +146,16 @@ namespace Higgsoft.Cake.Recipes.Libs
 
         #region Generates
 
+        /// <summary>
+        /// Gets the <see cref="DotNetCoreMSBuildSettings"/> for the recipe
+        /// </summary>
         public DotNetCoreMSBuildSettings MSBuildSettings
             => new DotNetCoreMSBuildSettings();
 
 
+        /// <summary>
+        /// Gets the <see cref="DotNetCoreRestoreSettings"/> for the recipe
+        /// </summary>
         public DotNetCoreRestoreSettings RestoreSettings
             => new DotNetCoreRestoreSettings {
                 MSBuildSettings = MSBuildSettings,
@@ -157,6 +163,9 @@ namespace Higgsoft.Cake.Recipes.Libs
             };
 
 
+        /// <summary>
+        /// Gets the <see cref="DotNetCorePublishSettings"/> for the recipe
+        /// </summary>
         public IEnumerable<DotNetCorePublishSettings> PublishSettings
             => Frameworks.Select(framework =>
                 new DotNetCorePublishSettings {
@@ -168,6 +177,9 @@ namespace Higgsoft.Cake.Recipes.Libs
                 });
 
 
+        /// <summary>
+        /// Gets the <see cref="Pack.NuGetPackSettings"/> for the recipe
+        /// </summary>
         public NuGetPackSettings NuGetPackSettings
             => new NuGetPackSettings {
                 Id = Id,
@@ -184,7 +196,7 @@ namespace Higgsoft.Cake.Recipes.Libs
                 Tags = Tags,
                 Symbols = Symbols,
                 Files = NuGetFiles,
-                BasePath = BuildDirectory,
+                //BasePath = BuildDirectory,
                 OutputDirectory = NuGetDirectory,
                 RequireLicenseAcceptance = false,
                 Properties = new Dictionary<string, string> {
@@ -194,6 +206,9 @@ namespace Higgsoft.Cake.Recipes.Libs
             };
 
 
+        /// <summary>
+        /// Gets the <see cref="Push.NuGetPushSettings"/> for the recipe
+        /// </summary>
         public NuGetPushSettings NuGetPushSettings
             => Build.Local
             ? new NuGetPushSettings { Source = Build.NuGetLocalSource }

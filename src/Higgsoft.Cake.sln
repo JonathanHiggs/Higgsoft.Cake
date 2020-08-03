@@ -9,15 +9,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
-		..\build.cake = ..\build.cake
-		..\build.ps1 = ..\build.ps1
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		..\ReleaseNotes.md = ..\ReleaseNotes.md
 		..\ReleaseNotes.vnext.md = ..\ReleaseNotes.vnext.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{CF342958-8366-45FB-B0ED-AE1BA459E0B9}"
+	ProjectSection(SolutionItems) = preProject
+		..\tools\packages.config = ..\tools\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{7A547B43-CC96-4D08-8E31-D7A58E9C9D85}"
+	ProjectSection(SolutionItems) = preProject
+		..\build.cake = ..\build.cake
+		..\build.ps1 = ..\build.ps1
 		..\test-net48.cake = ..\test-net48.cake
 		..\test-netcoreapp31.cake = ..\test-netcoreapp31.cake
-		..\test-standard20.cake = ..\test-standard20.cake
+		..\test-netstandard20.cake = ..\test-netstandard20.cake
 		..\test.cake = ..\test.cake
 	EndProjectSection
 EndProject
@@ -34,6 +43,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF342958-8366-45FB-B0ED-AE1BA459E0B9} = {EF4949EC-3613-4BC4-84C9-C01597411ED4}
+		{7A547B43-CC96-4D08-8E31-D7A58E9C9D85} = {EF4949EC-3613-4BC4-84C9-C01597411ED4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EEF1CA6-769E-432A-A1CC-C9C9C64C4692}

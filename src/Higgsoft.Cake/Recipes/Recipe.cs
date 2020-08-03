@@ -65,7 +65,7 @@ namespace Higgsoft.Cake.Recipes
         /// Get and sets a flat that determines whether the assembly info file is shared between
         /// multiple projects
         /// </summary>
-        public bool SharedAssemblyInforFile { get; set; } = false;
+        public bool SharedAssemblyInfoFile { get; set; } = false;
 
         #endregion
 
@@ -222,7 +222,7 @@ namespace Higgsoft.Cake.Recipes
         #region Generated
 
         /// <summary>
-        /// Gets <see cref="Check.CheckSettings"/> for the recipe
+        /// Gets the <see cref="Check.CheckSettings"/> for the recipe
         /// </summary>
         public CheckSettings CheckSettings
             => new CheckSettings {
@@ -249,12 +249,12 @@ namespace Higgsoft.Cake.Recipes
 
 
         /// <summary>
-        /// Gets and sets the <see cref="AssemblyInfoSettings"/> for the recipe
+        /// Gets the <see cref="AssemblyInfoSettings"/> for the recipe
         /// </summary>
         public AssemblyInfoSettings AssmeblyInfoSettings
             => new AssemblyInfoSettings {
-                Title = !SharedAssemblyInforFile ? Project : string.Empty,
-                Guid = !SharedAssemblyInforFile ? Guid : string.Empty,
+                Title = !SharedAssemblyInfoFile ? Project : string.Empty,
+                Guid = !SharedAssemblyInfoFile ? Guid : string.Empty,
                 Description = Description,
                 Product = Solution,
                 Company = Build.Company,

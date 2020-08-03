@@ -41,7 +41,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
             Information($"Project File              {lib.ProjectFile}");
             Information($"Assembly Info File        {lib.Assembly Info File}");
             Information($"Release Notes File        {lib.ReleaseNotesFile}");
-            Information($"Build Directory           {lib.BuildDirectory}");
+            //Information($"Build Directory           {lib.BuildDirectory}");
             Information($"Publish Directory         {lib.PublishDirectory}");
             Information($"NuGet Directory           {lib.NuGetDirectory}");
             Information("\nSettings");
@@ -55,7 +55,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     tasks.Setup = Task($"{lib.Id}-Setup")
         .IsDependentOn(tasks.Info)
         .Does(() => {
-            EnsureDirectoryExists(lib.BuildDirectory);
+            //EnsureDirectoryExists(lib.BuildDirectory);
             EnsureDirectoryExists(lib.PublishDirectory);
             EnsureDirectoryExists(lib.NuGetDirectory);
         })
@@ -111,7 +111,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => {
             CleanDirectories($"{lib.SolutionDirectory}/**/bin/{Build.Configuration}");
             CleanDirectories($"{lib.SolutionDirectory}/**/obj/{Build.Configuration}");
-            CleanDirectory(lib.BuildDirectory);
+            //CleanDirectory(lib.BuildDirectory);
             CleanDirectory(lib.PublishDirectory);
             CleanDirectory(lib.NuGetDirectory);
         })
