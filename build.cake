@@ -101,10 +101,6 @@ var packSettings = new NuGetPackSettings {
     }
 };
 
-//var deleteSettings = new NuGetDeleteSettings {
-//    Source = "Local"
-//};
-
 var pushSettings = new NuGetPushSettings {
     Source = "Local"
 };
@@ -193,33 +189,24 @@ Task("Clean")
 
 Task("Restore")
     .IsDependentOn("Clean")
-    .Does(() => {
-        DotNetCoreRestore(solutionFile, restoreSettings);
-    });
+    .Does(() => DotNetCoreRestore(solutionFile, restoreSettings));
 
 
 Task("Build")
     .IsDependentOn("Restore")
-    .Does(() => {
-        foreach (var framework in frameworks)
-        {
-            buildSettings.Framework = framework;
-
-            DotNetCoreBuild(solutionFile, buildSettings);
-        }
+    .DoesForEach(frameworks, framework => {
+        buildSettings.Framework = framework;
+        DotNetCoreBuild(solutionFile, buildSettings);
     });
 
 
 Task("Publish")
     .IsDependentOn("Build")
-    .Does(() => {
-        foreach (var framework in frameworks)
-        {
-            publishSettings.Framework = framework;
-            publishSettings.OutputDirectory = $"{publishDir}/{framework}";
+    .DoesForEach(frameworks, framework => {
+        publishSettings.Framework = framework;
+        publishSettings.OutputDirectory = $"{publishDir}/{framework}";
 
-            DotNetCorePublish(projectFile, publishSettings);
-        }
+        DotNetCorePublish(projectFile, publishSettings);
     });
 
 
@@ -251,6 +238,7 @@ Task("AliasTests")
     .IsDependentOn("Package")
     .WithCriteria(() => runTests)
     .Does(() => {
+        // Manually install package
         var package = File($"{nugetDir}/{project}.{version}.nupkg");
         var addinDir = Directory($"{root}/tools/Addins/{project}/{project}");
 
@@ -259,11 +247,77 @@ Task("AliasTests")
 
         Unzip(package, addinDir);
 
+        // Run tests
         Information("Test - net48");
         CakeExecuteScript("./test-net48.cake");
 
         Information("Test - netstandard20");
         DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test-netstandard20.cake");
+
+        // Clean up
+        DeleteDirectory(
+            Directory($"{root}/tools/Addins/{project}"),
+            new DeleteDirectorySettings { Recursive = true, Force = true });
+    });
+
+
+Task("RecipeTests")
+    .IsDependentOn("AliasTests")
+    .WithCriteria(() => runTests)
+    .Does(() => {
+        // Manually install package
+        var dirs = new[] { root, $"{root}/test/dotnet-lib", $"{root}/test/dotnet-app" };
+        var package = File($"{nugetDir}/{project}.{version}.nupkg");
+
+        foreach (var dir in dirs)
+        {
+            var addinDir = Directory($"{dir}/tools/Addins/{project}.{version}");
+
+            if (DirectoryExists(addinDir))
+                DeleteDirectory(addinDir, new DeleteDirectorySettings { Recursive = true, Force = true });
+
+            Unzip(package, addinDir);
+            CopyFile(package, File($"{addinDir}/{project}.{version}.nupkg"));
+
+            var toolsDir = Directory($"{dir}/tools/{project}.{version}");
+
+            if (DirectoryExists(toolsDir))
+                DeleteDirectory(toolsDir, new DeleteDirectorySettings { Recursive = true, Force = true });
+
+            Unzip(package, toolsDir);
+            CopyFile(package, File($"{toolsDir}/{project}.{version}.nupkg"));
+        }
+
+        // Run tests
+        CakeExecuteScript(
+            "./test/dotnet-lib/build.cake",
+            new CakeSettings {
+                Arguments = new Dictionary<string, string>{
+                    { "local", "true" },
+                    { "check-staged", "false" },
+                    { "check-uncommitted", "false" },
+                    { "enable-commits", "false" } },
+                WorkingDirectory = Directory("./test/dotnet-lib") });
+
+        CakeExecuteScript(
+            "./test/dotnet-app/build.cake",
+            new CakeSettings {
+                Arguments = new Dictionary<string, string>{
+                    { "local", "true" },
+                    { "check-staged", "false" },
+                    { "check-uncommitted", "false" },
+                    { "enable-commits", "false" } },
+                WorkingDirectory = Directory("./test/dotnet-app") });
+
+        // Clean up
+        foreach (var dir in dirs)
+        {
+            var addinDir = Directory($"{dir}/tools/Addins/{project}.{version}");
+            var toolsDir = Directory($"{dir}/tools/{project}.{version}");
+
+            DeleteDirectory(addinDir, new DeleteDirectorySettings { Recursive = true, Force = true });
+            DeleteDirectory(toolsDir, new DeleteDirectorySettings { Recursive = true, Force = true });
+        }
     });
 
 
@@ -275,22 +329,10 @@ Task("Push")
             version.ToString(),
             new DotNetCoreNuGetDeleteSettings {
                 Source = "Local",
-                NonInteractive = true
-            });
+                NonInteractive = true });
 
         var package = File($"{nugetDir}/{project}.{version}.nupkg");
         NuGetPush(package, pushSettings);
-    });
-
-
-Task("RecipeTests")
-    .IsDependentOn("Push")
-    .WithCriteria(() => runTests)
-    .Does(() => {
-        CleanDirectories(Directory("./test/**/tools"));
-
-        //DotNetCoreExecute("./tools/Cake.CoreCLR/Cake.dll", "test/dotnet-lib/build.cake");
-        CakeExecuteScript("./test/dotnet-lib/build.cake");
     });
 
 
