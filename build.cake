@@ -299,7 +299,7 @@ Task("RecipeTests")
 ////////////////////////
 
 Task("Default")
-    .IsDependentOn("Push")
+    .IsDependentOn("RecipeTests")
     .Does(() => Information("Default build completed"));
 
 

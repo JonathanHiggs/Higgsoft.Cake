@@ -59,6 +59,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         {
             context.EnsureDirectoryExists(app.PublishDirectory);
             context.EnsureDirectoryExists(app.PackageDirectory);
+            context.EnsureDirectoryExists(app.ArtefactDirectory);
         }
 
 
@@ -76,15 +77,15 @@ namespace Higgsoft.Cake.Recipes.Apps
         public static void DotNetAppRestoreBuild(
             this ICakeContext context,
             DotNetApp app,
-            (DotNetCoreRestoreSettings Restore, DotNetCoreBuildSettings Build) settings)
+            DotNetApp.DotNetCoreRestoreBuildSettings settings)
         {
             context.DotNetCoreRestore(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
-                settings.Restore);
+                settings.RestoreSettings);
 
             context.DotNetCoreBuild(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
-                settings.Build);
+                settings.BuildSettings);
         }
 
 
@@ -92,15 +93,15 @@ namespace Higgsoft.Cake.Recipes.Apps
         public static void DotNetAppRestorePublish(
             this ICakeContext context,
             DotNetApp app,
-            (DotNetCoreRestoreSettings Restore, DotNetCorePublishSettings Publish) settings)
+            DotNetApp.DotNetCoreRestorePublishSettings settings)
         {
             context.DotNetCoreRestore(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
-                settings.Restore);
+                settings.RestoreSettings);
 
             context.DotNetCorePublish(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
-                settings.Publish);
+                settings.PublishSettings);
         }
 
 

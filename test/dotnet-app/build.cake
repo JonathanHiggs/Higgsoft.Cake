@@ -2,7 +2,7 @@
 // Includes & Using
 ////////////////////////
 
-#load nuget:?package=Higgsoft.Cake&version=0.0.1
+#load nuget:?package=Higgsoft.Cake&version=0.1.0
 
 
 //////////////////////////
@@ -37,11 +37,8 @@ AddDotNetApp(app => {
     app.TagVersion                  = false;
     app.PushToRemote                = false;
 
-    app.ProjectUrl                  = new Uri("https://github.com/JonathanHiggs/Higgsoft.Cake");
-
     app.AddFrameworks("netcoreapp3.1");
     app.AddRuntimes("win10-x64", "linux-x64", "linux-arm64");
-    app.AddAuthors("Jonathan Higgs");
 });
 
 

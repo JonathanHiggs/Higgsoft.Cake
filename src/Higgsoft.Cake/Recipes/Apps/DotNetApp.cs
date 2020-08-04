@@ -111,7 +111,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// Gets a sequence of restore-publish settings for runtime-framework pairs
         /// </summary>
         public IEnumerable<DotNetCoreRestorePublishSettings>
-            PublishSettings
+            RestorePublishSettings
             => RuntimeFrameworks.Select(p => new DotNetCoreRestorePublishSettings(
                 new DotNetCoreRestoreSettings {
                     MSBuildSettings = MSBuildSettings,
