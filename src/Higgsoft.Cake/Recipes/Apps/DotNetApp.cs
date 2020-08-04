@@ -70,6 +70,12 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// </summary>
         public DirectoryPath PackageDirectory { get; set; }
 
+
+        /// <summary>
+        /// Gets and sets the path to the artefacts directory
+        /// </summary>
+        public DirectoryPath ArtefactDirectory { get; set; }
+
         #endregion
 
 
@@ -116,6 +122,20 @@ namespace Higgsoft.Cake.Recipes.Apps
                     MSBuildSettings = MSBuildSettings,
                     OutputDirectory = $"{PublishDirectory}\\{p.Framework}\\{p.Runtime}",
                     Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() }));
+
+
+        /// <summary>
+        /// Gets the temporary artefact file path
+        /// </summary>
+        public FilePath TempArtefactFile
+            => new FilePath($"{PublishDirectory}\\{Id}.{Version}.zip");
+
+
+        /// <summary>
+        /// Gets the artefact file path
+        /// </summary>
+        public FilePath ArtefactFile
+            => new FilePath($"{ArtefactDirectory}\\{Id}.{Version}.zip");
 
         #endregion
     }

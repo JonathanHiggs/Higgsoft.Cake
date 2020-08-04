@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Cake.Common.Solution.Project.Properties;
 using Cake.Common.Tools.NUnit;

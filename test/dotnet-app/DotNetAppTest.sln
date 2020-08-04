@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetAppTest", "DotNetAppTest\DotNetAppTest.csproj", "{FDA0A3EC-4F51-44FB-BEC0-426431223280}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDA0A3EC-4F51-44FB-BEC0-426431223280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA0A3EC-4F51-44FB-BEC0-426431223280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA0A3EC-4F51-44FB-BEC0-426431223280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA0A3EC-4F51-44FB-BEC0-426431223280}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD57F16A-991E-4DE9-A847-3719617A6EF5}
+	EndGlobalSection
+EndGlobal

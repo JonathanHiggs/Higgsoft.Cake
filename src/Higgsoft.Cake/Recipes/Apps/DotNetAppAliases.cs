@@ -41,6 +41,7 @@ namespace Higgsoft.Cake.Recipes.Apps
             context.Information($"Release Notes File        {app.ReleaseNotesFile}");
             context.Information($"Publish Directory         {app.PublishDirectory}");
             context.Information($"Package Directory         {app.PackageDirectory}");
+            context.Information($"Artefacts Directory       {app.ArtefactDirectory}");
             context.Information("\nSettings");
             context.Information($"Prepare Release Notes     {app.PrepareReleaseNotes}");
             context.Information($"Update Assembly Info      {app.UpdateAssemblyInfo}");
@@ -106,14 +107,14 @@ namespace Higgsoft.Cake.Recipes.Apps
         [CakeMethodAlias]
         public static void DotNetAppPackage(this ICakeContext context, DotNetApp app)
         {
-            context.Information("Package...");
+            context.Zip(app.PublishDirectory, app.TempArtefactFile);
         }
 
 
         [CakeMethodAlias]
         public static void DotNetAppPush(this ICakeContext context, DotNetApp app)
         {
-            context.Information("Push...");
+            context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
         }
     }
 }

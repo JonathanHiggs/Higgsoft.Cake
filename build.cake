@@ -268,7 +268,13 @@ Task("AliasTests")
 Task("Push")
     .IsDependentOn("AliasTests")
     .Does(() => {
-        //NuGetDelete(project, version.ToString(), deleteSettings);
+        DotNetCoreNuGetDelete(
+            project,
+            version.ToString(),
+            new DotNetCoreNuGetDeleteSettings {
+                Source = "Local",
+                NonInteractive = true
+            });
 
         var package = File($"{nugetDir}/{project}.{version}.nupkg");
         NuGetPush(package, pushSettings);
