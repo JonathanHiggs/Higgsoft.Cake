@@ -20,6 +20,7 @@ var checkStaged         = Argument("check-staged", true);
 var checkUncommitted    = Argument("check-uncommitted", true);
 var checkUntracked      = Argument("check-untracked", true);
 var requireReleaseNotes = Argument("require-release-notes", true);
+var runTests            = Argument("run-tests", true);
 
 
 //////////////////////////
@@ -248,6 +249,7 @@ Task("Package")
 
 Task("AliasTests")
     .IsDependentOn("Package")
+    .WithCriteria(() => runTests)
     .Does(() => {
         var package = File($"{nugetDir}/{project}.{version}.nupkg");
         var addinDir = Directory($"{root}/tools/Addins/{project}/{project}");
@@ -283,6 +285,7 @@ Task("Push")
 
 Task("RecipeTests")
     .IsDependentOn("Push")
+    .WithCriteria(() => runTests)
     .Does(() => {
         CleanDirectories(Directory("./test/**/tools"));
 
