@@ -99,30 +99,25 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         /// <summary>
-        /// Restores external packages
+        /// Restores external packages and builds the project
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="lib">Recipe configuration</param>
+        /// <param name="settings">Restore build settings</param>
         [CakeMethodAlias]
-        public static void DotNetLibRestore(this ICakeContext context, DotNetLib lib)
+        public static void DotNetLibBuild(
+            this ICakeContext context,
+            DotNetLib lib,
+            DotNetCoreRestoreBuildSettings settings)
         {
             context.DotNetCoreRestore(
                 lib.SolutionFile?.FullPath ?? lib.ProjectFile.FullPath,
-                lib.RestoreSettings);
-        }
+                settings.RestoreSettings);
 
-
-        /// <summary>
-        /// Builds the project
-        /// </summary>
-        /// <param name="context">Cake runtime context</param>
-        /// <param name="lib">Recipe configuration</param>
-        [CakeMethodAlias]
-        public static void DotNetLibBuild(this ICakeContext context, DotNetLib lib)
-            // ToDo: build for each framework
-            => context.DotNetCoreBuild(
+            context.DotNetCoreBuild(
                 lib.SolutionFile?.FullPath ?? lib.ProjectFile.FullPath,
-                lib.BuildSettings);
+                settings.BuildSettings);
+        }
 
 
         /// <summary>
@@ -130,15 +125,22 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="lib">Recipe configuration</param>
-        /// <param name="settings"></param>
+        /// <param name="settings">Restore publish settings</param>
         [CakeMethodAlias]
         public static void DotNetLibPublish(
             this ICakeContext context,
             DotNetLib lib,
-            DotNetCorePublishSettings settings)
+            DotNetCoreRestorePublishSettings settings)
         {
-            context.Information($"Publishing: {settings.Framework}");
-            context.DotNetCorePublish(lib.ProjectFile.FullPath, settings);
+            context.Information($"Publishing: {settings.PublishSettings.Framework}");
+
+            context.DotNetCoreRestore(
+                lib.SolutionFile?.FullPath ?? lib.ProjectFile.FullPath,
+                settings.RestoreSettings);
+
+            context.DotNetCorePublish(
+                lib.ProjectFile.FullPath,
+                settings.PublishSettings);
         }
 
 

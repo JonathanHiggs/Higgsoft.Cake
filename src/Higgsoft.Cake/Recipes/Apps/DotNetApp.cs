@@ -92,37 +92,39 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// <summary>
         /// Gets a sequence of restore-build settings for runtime-framework pairs
         /// </summary>
-        public IEnumerable<DotNetCoreRestoreBuildSettings>
-            RestoreBuildSettings
-            => RuntimeFrameworks.Select(p => new DotNetCoreRestoreBuildSettings(
-                new DotNetCoreRestoreSettings {
-                    MSBuildSettings = MSBuildSettings,
-                    Verbosity = Build.Verbosity.ToDotNetCoreVerbosity(),
-                    Runtime = p.Runtime },
-                new DotNetCoreBuildSettings {
-                    Configuration = Build.Configuration,
-                    NoRestore = true,
-                    MSBuildSettings = MSBuildSettings,
-                    Runtime = p.Runtime,
-                    Framework = p.Framework }));
+        public IEnumerable<DotNetCoreRestoreBuildSettings> RestoreBuildSettings
+            => RuntimeFrameworks.Select(p =>
+                new DotNetCoreRestoreBuildSettings(
+                    new DotNetCoreRestoreSettings {
+                        MSBuildSettings = MSBuildSettings,
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity(),
+                        Runtime = p.Runtime },
+                    new DotNetCoreBuildSettings {
+                        Configuration = Build.Configuration,
+                        NoRestore = true,
+                        MSBuildSettings = MSBuildSettings,
+                        Runtime = p.Runtime,
+                        Framework = p.Framework }));
 
 
         /// <summary>
         /// Gets a sequence of restore-publish settings for runtime-framework pairs
         /// </summary>
-        public IEnumerable<DotNetCoreRestorePublishSettings>
-            RestorePublishSettings
-            => RuntimeFrameworks.Select(p => new DotNetCoreRestorePublishSettings(
-                new DotNetCoreRestoreSettings {
-                    MSBuildSettings = MSBuildSettings,
-                    Verbosity = Build.Verbosity.ToDotNetCoreVerbosity(),
-                    Runtime = p.Runtime },
-                new DotNetCorePublishSettings {
-                    NoRestore = true,
-                    Framework = p.Framework,
-                    MSBuildSettings = MSBuildSettings,
-                    OutputDirectory = $"{PublishDirectory}\\{p.Framework}\\{p.Runtime}",
-                    Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() }));
+        public IEnumerable<DotNetCoreRestorePublishSettings> RestorePublishSettings
+            => RuntimeFrameworks.Select(p =>
+                new DotNetCoreRestorePublishSettings(
+                    new DotNetCoreRestoreSettings {
+                        MSBuildSettings = MSBuildSettings,
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity(),
+                        Runtime = p.Runtime },
+                    new DotNetCorePublishSettings {
+                        Configuration = Build.Configuration,
+                        NoRestore = true,
+                        Framework = p.Framework,
+                        Runtime = p.Runtime,
+                        MSBuildSettings = MSBuildSettings,
+                        OutputDirectory = $"{PublishDirectory}\\{p.Framework}\\{p.Runtime}",
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() }));
 
 
         /// <summary>
@@ -137,79 +139,6 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// </summary>
         public FilePath ArtefactFile
             => new FilePath($"{ArtefactDirectory}\\{Id}.{Version}.zip");
-
-        #endregion
-
-
-        #region Helpers
-
-        /// <summary>
-        /// Struct for restore-build settings
-        /// </summary>
-        public readonly struct DotNetCoreRestoreBuildSettings
-        {
-            /// <summary>
-            /// Initializes a new instance of <see cref="DotNetCoreRestoreBuildSettings"/>
-            /// </summary>
-            /// <param name="restoreSettings"></param>
-            /// <param name="buildSettings"></param>
-            public DotNetCoreRestoreBuildSettings(
-                DotNetCoreRestoreSettings restoreSettings,
-                DotNetCoreBuildSettings buildSettings)
-            {
-                RestoreSettings = restoreSettings
-                    ?? throw new ArgumentNullException(nameof(restoreSettings));
-
-                BuildSettings = buildSettings
-                    ?? throw new ArgumentNullException(nameof(buildSettings));
-            }
-
-            /// <summary>
-            /// Gets the <see cref="DotNetCoreRestoreSettings"/>
-            /// </summary>
-            public DotNetCoreRestoreSettings RestoreSettings { get; }
-
-
-            /// <summary>
-            /// Gets the <see cref="DotNetCoreBuildSettings"/>
-            /// </summary>
-            public DotNetCoreBuildSettings BuildSettings { get; }
-        }
-
-
-        /// <summary>
-        /// Struct for restore-publish settings
-        /// </summary>
-        public readonly struct DotNetCoreRestorePublishSettings
-        {
-            /// <summary>
-            /// Initializes a new instance of <see cref="DotNetCoreRestorePublishSettings"/>
-            /// </summary>
-            /// <param name="restoreSettings"></param>
-            /// <param name="publishSettings"></param>
-            public DotNetCoreRestorePublishSettings(
-                DotNetCoreRestoreSettings restoreSettings,
-                DotNetCorePublishSettings publishSettings)
-            {
-                RestoreSettings = restoreSettings
-                    ?? throw new ArgumentNullException(nameof(restoreSettings));
-
-                PublishSettings = publishSettings
-                    ?? throw new ArgumentNullException(nameof(publishSettings));
-            }
-
-
-            /// <summary>
-            /// Gets the <see cref="DotNetCoreRestoreSettings"/>
-            /// </summary>
-            public DotNetCoreRestoreSettings RestoreSettings { get; }
-
-
-            /// <summary>
-            /// Gets the <see cref="DotNetCorePublishSettings"/>
-            /// </summary>
-            public DotNetCorePublishSettings PublishSettings { get; }
-        }
 
         #endregion
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 
 using Cake.Common.Tools.DotNetCore.Build;
 using Cake.Common.Tools.DotNetCore.MSBuild;
@@ -143,38 +144,37 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         /// <summary>
-        /// Gets the <see cref="DotNetCoreRestoreSettings"/> for the recipe
+        /// Gets a sequence of restore-build settings
         /// </summary>
-        public DotNetCoreRestoreSettings RestoreSettings
-            => new DotNetCoreRestoreSettings {
-                MSBuildSettings = MSBuildSettings,
-                Verbosity = Build.Verbosity.ToDotNetCoreVerbosity()
-            };
-
-
-        /// <summary>
-        /// Gets the <see cref="DotNetCoreBuildSettings"/> for the recipe
-        /// </summary>
-        public DotNetCoreBuildSettings BuildSettings
-            => new DotNetCoreBuildSettings {
-                Configuration = Build.Configuration,
-                NoRestore = true,
-                MSBuildSettings = MSBuildSettings
-            };
+        public IEnumerable<DotNetCoreRestoreBuildSettings> RestoreBuildSettings
+            => Frameworks.Select(framework =>
+                new DotNetCoreRestoreBuildSettings(
+                    new DotNetCoreRestoreSettings {
+                        MSBuildSettings = MSBuildSettings,
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() },
+                    new DotNetCoreBuildSettings {
+                        Configuration = Build.Configuration,
+                        NoRestore = true,
+                        MSBuildSettings = MSBuildSettings,
+                        Framework = framework }));
 
 
         /// <summary>
         /// Gets the <see cref="DotNetCorePublishSettings"/> for the recipe
         /// </summary>
-        public IEnumerable<DotNetCorePublishSettings> PublishSettings
+        public IEnumerable<DotNetCoreRestorePublishSettings> RestorePublishSettings
             => Frameworks.Select(framework =>
-                new DotNetCorePublishSettings {
-                    NoRestore = true,
-                    Framework = framework,
-                    MSBuildSettings = MSBuildSettings,
-                    OutputDirectory = $"{PublishDirectory}\\{framework}",
-                    Verbosity = Build.Verbosity.ToDotNetCoreVerbosity()
-                });
+                new DotNetCoreRestorePublishSettings(
+                    new DotNetCoreRestoreSettings {
+                        MSBuildSettings = MSBuildSettings,
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() },
+                    new DotNetCorePublishSettings {
+                        Configuration = Build.Configuration,
+                        NoRestore = true,
+                        Framework = framework,
+                        MSBuildSettings = MSBuildSettings,
+                        OutputDirectory = $"{PublishDirectory}\\{framework}",
+                        Verbosity = Build.Verbosity.ToDotNetCoreVerbosity() }));
 
 
         /// <summary>

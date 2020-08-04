@@ -100,12 +100,12 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="app">Recipe configuration</param>
-        /// <param name="settings"></param>
+        /// <param name="settings">Restore build settings</param>
         [CakeMethodAlias]
         public static void DotNetAppRestoreBuild(
             this ICakeContext context,
             DotNetApp app,
-            DotNetApp.DotNetCoreRestoreBuildSettings settings)
+            DotNetCoreRestoreBuildSettings settings)
         {
             context.DotNetCoreRestore(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
@@ -122,13 +122,16 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="app">Recipe configuration</param>
-        /// <param name="settings"></param>
+        /// <param name="settings">Restore publish settings</param>
         [CakeMethodAlias]
         public static void DotNetAppRestorePublish(
             this ICakeContext context,
             DotNetApp app,
-            DotNetApp.DotNetCoreRestorePublishSettings settings)
+            DotNetCoreRestorePublishSettings settings)
         {
+            context.Information(
+                $"Publishing: {settings.PublishSettings.Framework} {settings.PublishSettings.Runtime}");
+
             context.DotNetCoreRestore(
                 app.SolutionFile?.FullPath ?? app.ProjectFile.FullPath,
                 settings.RestoreSettings);

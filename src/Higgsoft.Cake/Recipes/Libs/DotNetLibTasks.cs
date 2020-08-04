@@ -8,12 +8,6 @@ namespace Higgsoft.Cake.Recipes.Libs
     public class DotNetLibTasks : RecipeTasks
     {
         /// <summary>
-        /// Gets and sets the restore <see cref="CakeTaskBuilder"/>
-        /// </summary>
-        public CakeTaskBuilder Restore { get; set; }
-
-
-        /// <summary>
         /// Gets and sets the build <see cref="CakeTaskBuilder"/>
         /// </summary>
         public CakeTaskBuilder Build { get; set; }

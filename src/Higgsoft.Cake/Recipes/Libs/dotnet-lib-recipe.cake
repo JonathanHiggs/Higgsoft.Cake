@@ -58,22 +58,16 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibClean(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Clean, ex));
 
-    tasks.Restore = Task($"{lib.Id}-Restore")
-        .IsDependentOn(tasks.Clean)
-        .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
-        .Does(() => DotNetLibRestore(lib))
-        .OnError(ex => RecipeOnError(lib, tasks.Restore, ex));
-
     // ToDo: don't create task if not used
     tasks.PreBuild = Task($"{lib.Id}-PreBuild")
-        .IsDependentOn(tasks.Restore)
+        .IsDependentOn(tasks.Clean)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UsePreBuildTask)
         .OnError(ex => RecipeOnError(lib, tasks.PreBuild, ex));
 
     tasks.Build = Task($"{lib.Id}-Build")
         .IsDependentOn(tasks.PreBuild)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
-        .Does(() => DotNetLibBuild(lib))
+        .DoesForEach(lib.RestoreBuildSettings, settings => DotNetLibBuild(lib, settings))
         .OnError(ex => RecipeOnError(lib, tasks.Build, ex));
 
     // ToDo: don't create task if not used
@@ -93,7 +87,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     tasks.Publish = Task($"{lib.Id}-Publish")
         .IsDependentOn(tasks.Test)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
-        .DoesForEach(lib.PublishSettings, settings => DotNetLibPublish(lib, settings))
+        .DoesForEach(lib.RestorePublishSettings, settings => DotNetLibPublish(lib, settings))
         .OnError(ex => RecipeOnError(lib, tasks.Publish, ex));
 
     tasks.Package = Task($"{lib.Id}-Package")

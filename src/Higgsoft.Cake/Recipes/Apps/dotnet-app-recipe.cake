@@ -45,6 +45,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => RecipeReleaseNotes(app))
         .OnError(ex => RecipeOnError(app, tasks.ReleaseNotes, ex));
 
+    // ToDo: don't create task if not used
     tasks.AssemblyInfo = Task($"{app.Id}-AssemblyInfo")
         .IsDependentOn(tasks.ReleaseNotes)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.UpdateAssemblyInfo)
@@ -57,6 +58,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => DotNetAppClean(app))
         .OnError(ex => RecipeOnError(app, tasks.Clean, ex));
 
+    // ToDo: don't create task if not used
     tasks.PreBuild = Task($"{app.Id}-PreBuild")
         .IsDependentOn(tasks.Clean)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.UsePreBuildTask)
@@ -68,6 +70,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .DoesForEach(app.RestoreBuildSettings, settings => DotNetAppRestoreBuild(app, settings))
         .OnError(ex => RecipeOnError(app, tasks.Build, ex));
 
+    // ToDo: don't create task if not used
     tasks.PostBuild = Task($"{app.Id}-PostBuild")
         .IsDependentOn(tasks.Build)
         .IsDependeeOf(Build.BuildAll.Task.Name)
@@ -94,6 +97,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => DotNetAppPackage(app))
         .OnError(ex => RecipeOnError(app, tasks.Package, ex));
 
+    // ToDo: don't create task if not used
     tasks.Commit = Task($"{app.Id}-Commit")
         .IsDependentOn(tasks.Package)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && !Build.Local)
