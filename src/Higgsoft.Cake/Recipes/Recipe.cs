@@ -5,7 +5,6 @@ using Cake.Common.Solution.Project.Properties;
 using Cake.Common.Tools.NUnit;
 using Cake.Core;
 using Cake.Core.IO;
-using Cake.Git;
 
 using Higgsoft.Cake.Check;
 using Higgsoft.Cake.Commit;

@@ -3,37 +3,45 @@ using System.Linq;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
-using Cake.Common.Solution.Project.Properties;
 using Cake.Common.Tools.DotNetCore;
 using Cake.Common.Tools.DotNetCore.NuGet.Delete;
 using Cake.Common.Tools.DotNetCore.Publish;
 using Cake.Common.Tools.NuGet;
 using Cake.Common.Tools.NuGet.Pack;
-using Cake.Common.Tools.NUnit;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
 
-using Higgsoft.Cake.Check;
-using Higgsoft.Cake.Commit;
-using Higgsoft.Cake.ReleaseNotes;
-using Higgsoft.Cake.Versions;
-
 namespace Higgsoft.Cake.Recipes.Libs
 {
+    /// <summary>
+    /// Extension methods for <see cref="DotNetLib"/> recipes
+    /// </summary>
     [CakeAliasCategory("Higgsoft.Cake.Recipes.Libs")]
     public static class DotNetLibAliases
     {
+        /// <summary>
+        /// Configures a <see cref="DotNetLib"/> recipe from a configuration action
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="config">Configuration action</param>
+        /// <returns><see cref="DotNetLib"/> recipe settings</returns>
         [CakeMethodAlias]
         public static DotNetLib ConfigDotNetLib(this ICakeContext context, Action<DotNetLib> config)
         {
             var lib = new DotNetLib();
             config(lib);
+            // ToDo: check for adding recipes twice
             Build.RecipeBuilds.Add(lib);
             return lib;
         }
 
 
+        /// <summary>
+        /// Logs the recipe settings to the build output
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibInfo(this ICakeContext context, DotNetLib lib)
         {
@@ -62,6 +70,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         }
 
 
+        /// <summary>
+        /// Performs setup actions
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibSetup(this ICakeContext context, DotNetLib lib)
         {
@@ -70,6 +83,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         }
 
 
+        /// <summary>
+        /// Cleans temporary files
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibClean(this ICakeContext context, DotNetLib lib)
         {
@@ -80,6 +98,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         }
 
 
+        /// <summary>
+        /// Restores external packages
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibRestore(this ICakeContext context, DotNetLib lib)
         {
@@ -89,6 +112,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         }
 
 
+        /// <summary>
+        /// Builds the project
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibBuild(this ICakeContext context, DotNetLib lib)
             // ToDo: build for each framework
@@ -97,6 +125,12 @@ namespace Higgsoft.Cake.Recipes.Libs
                 lib.BuildSettings);
 
 
+        /// <summary>
+        /// Publishes the project
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
+        /// <param name="settings"></param>
         [CakeMethodAlias]
         public static void DotNetLibPublish(
             this ICakeContext context,
@@ -108,6 +142,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         }
 
 
+        /// <summary>
+        /// Creates a nuget package from the publish files
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibPackage(this ICakeContext context, DotNetLib lib)
         {
@@ -130,9 +169,15 @@ namespace Higgsoft.Cake.Recipes.Libs
             }
 
             context.NuGetPack(lib.NuGetPackSettings);
+            context.Information($"Packed: {lib.NuGetDirectory}/{lib.Id}.{lib.Version}.nupkg");
         }
 
 
+        /// <summary>
+        /// Pushes the nuget package to the remote repo
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="lib">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetLibPush(this ICakeContext context, DotNetLib lib)
         {

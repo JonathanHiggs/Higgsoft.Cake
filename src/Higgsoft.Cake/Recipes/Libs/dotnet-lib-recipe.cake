@@ -45,6 +45,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => RecipeReleaseNotes(lib))
         .OnError(ex => RecipeOnError(lib, tasks.ReleaseNotes, ex));
 
+    // ToDo: don't create task if not used
     tasks.AssemblyInfo = Task($"{lib.Id}-AssemblyInfo")
         .IsDependentOn(tasks.ReleaseNotes)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UpdateAssemblyInfo)
@@ -63,6 +64,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibRestore(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Restore, ex));
 
+    // ToDo: don't create task if not used
     tasks.PreBuild = Task($"{lib.Id}-PreBuild")
         .IsDependentOn(tasks.Restore)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UsePreBuildTask)
@@ -74,6 +76,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibBuild(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Build, ex));
 
+    // ToDo: don't create task if not used
     tasks.PostBuild = Task($"{lib.Id}-PostBuild")
         .IsDependentOn(tasks.Build)
         .IsDependeeOf(Build.BuildAll.Task.Name)
@@ -100,6 +103,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibPackage(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Package, ex));
 
+    // ToDo: don't create task if not used
     tasks.Commit = Task($"{lib.Id}-Commit")
         .IsDependentOn(tasks.Package)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && !Build.Local)
@@ -115,6 +119,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     tasks.CleanUp = Task($"{lib.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
         .IsDependeeOf(Build.RunAll.Task.Name)
+        // ToDo: remove criteria from task, check in RecipeCleanUp alias
         .WithCriteria(() => lib.Errored || lib.SkipRemainingTasks || Build.Local)
         .Does(() => RecipeCleanUp(lib))
         .OnError(ex => RecipeOnError(lib, tasks.CleanUp, ex));

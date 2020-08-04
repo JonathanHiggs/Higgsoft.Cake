@@ -23,5 +23,8 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// Gets and sets the publish <see cref="CakeTaskBuilder"/>
         /// </summary>
         public CakeTaskBuilder Publish { get; set; }
+
+
+        // ToDo: Add docs task
     }
 }

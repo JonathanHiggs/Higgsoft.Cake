@@ -2,6 +2,7 @@
 // Tests
 ////////////////////////
 
+// ToDo: write tests for non-recipe aliases
 Task("Test")
     .Does(() => { });
 

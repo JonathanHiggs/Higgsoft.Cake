@@ -3,27 +3,39 @@
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNetCore;
-using Cake.Common.Tools.DotNetCore.Build;
-using Cake.Common.Tools.DotNetCore.Publish;
-using Cake.Common.Tools.DotNetCore.Restore;
 using Cake.Core;
 using Cake.Core.Annotations;
 
 namespace Higgsoft.Cake.Recipes.Apps
 {
+    /// <summary>
+    /// Extension methods for <see cref="DotNetApp"/> recipes
+    /// </summary>
     [CakeAliasCategory("Higgsoft.Cake.Recipes.Apps")]
     public static class DotNetAppAliases
     {
+        /// <summary>
+        /// Configures a <see cref="DotNetApp"/> recipe from a configuration action
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="config">Configuration action</param>
+        /// <returns><see cref="DotNetApp"/> recipe settings</returns>
         [CakeMethodAlias]
         public static DotNetApp ConfigDotNetApp(this ICakeContext context, Action<DotNetApp> config)
         {
             var app = new DotNetApp();
             config(app);
+            // ToDo: check for adding recipes twice
             Build.RecipeBuilds.Add(app);
             return app;
         }
 
 
+        /// <summary>
+        /// Logs the recipe settings to the build output
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppInfo(this ICakeContext context, DotNetApp app)
         {
@@ -54,6 +66,11 @@ namespace Higgsoft.Cake.Recipes.Apps
         }
 
 
+        /// <summary>
+        /// Performs setup actions
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppSetup(this ICakeContext context, DotNetApp app)
         {
@@ -63,6 +80,11 @@ namespace Higgsoft.Cake.Recipes.Apps
         }
 
 
+        /// <summary>
+        /// Cleans temporary files
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppClean(this ICakeContext context, DotNetApp app)
         {
@@ -73,6 +95,12 @@ namespace Higgsoft.Cake.Recipes.Apps
         }
 
 
+        /// <summary>
+        /// Restores external packages and builds the project
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
+        /// <param name="settings"></param>
         [CakeMethodAlias]
         public static void DotNetAppRestoreBuild(
             this ICakeContext context,
@@ -89,6 +117,12 @@ namespace Higgsoft.Cake.Recipes.Apps
         }
 
 
+        /// <summary>
+        /// Restores external packages and publishes the project
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
+        /// <param name="settings"></param>
         [CakeMethodAlias]
         public static void DotNetAppRestorePublish(
             this ICakeContext context,
@@ -105,17 +139,23 @@ namespace Higgsoft.Cake.Recipes.Apps
         }
 
 
+        /// <summary>
+        /// Creates a build artefact from the published files
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppPackage(this ICakeContext context, DotNetApp app)
-        {
-            context.Zip(app.PublishDirectory, app.TempArtefactFile);
-        }
+            => context.Zip(app.PublishDirectory, app.TempArtefactFile);
 
 
+        /// <summary>
+        /// Copies the build artefact to archive directory
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppPush(this ICakeContext context, DotNetApp app)
-        {
-            context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
-        }
+            => context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
     }
 }
