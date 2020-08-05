@@ -75,6 +75,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// <summary>
         /// Gets and sets the path to the artefacts directory
         /// </summary>
+        // ToDo: move to build level
         public DirectoryPath ArtefactDirectory { get; set; }
 
         #endregion
@@ -137,6 +138,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// <summary>
         /// Gets the artefact file path
         /// </summary>
+        // ToDo: switch on local build between local and global artefacts
         public FilePath ArtefactFile
             => new FilePath($"{ArtefactDirectory}\\{Id}.{Version}.zip");
 

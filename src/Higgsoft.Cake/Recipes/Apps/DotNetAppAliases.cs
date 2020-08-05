@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
@@ -25,7 +26,11 @@ namespace Higgsoft.Cake.Recipes.Apps
         {
             var app = new DotNetApp();
             config(app);
-            // ToDo: check for adding recipes twice
+
+            if (Build.RecipeBuilds.Any(r => r.Id == app.Id))
+                throw new InvalidOperationException(
+                    $"Recipe with id: {app.Id} already added to the build");
+
             Build.RecipeBuilds.Add(app);
             return app;
         }
@@ -159,6 +164,10 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// <param name="app">Recipe configuration</param>
         [CakeMethodAlias]
         public static void DotNetAppPush(this ICakeContext context, DotNetApp app)
-            => context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
+        {
+            // ToDo: delete existing file if local build
+
+            context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
+        }
     }
 }

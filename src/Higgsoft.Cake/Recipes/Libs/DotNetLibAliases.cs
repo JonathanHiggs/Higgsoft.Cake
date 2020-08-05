@@ -5,7 +5,6 @@ using Cake.Common.Diagnostics;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNetCore;
 using Cake.Common.Tools.DotNetCore.NuGet.Delete;
-using Cake.Common.Tools.DotNetCore.Publish;
 using Cake.Common.Tools.NuGet;
 using Cake.Common.Tools.NuGet.Pack;
 using Cake.Core;
@@ -31,7 +30,11 @@ namespace Higgsoft.Cake.Recipes.Libs
         {
             var lib = new DotNetLib();
             config(lib);
-            // ToDo: check for adding recipes twice
+
+            if (Build.RecipeBuilds.Any(r => r.Id == lib.Id))
+                throw new InvalidOperationException(
+                    $"Recipe with id: {lib.Id} already added to the build");
+
             Build.RecipeBuilds.Add(lib);
             return lib;
         }
