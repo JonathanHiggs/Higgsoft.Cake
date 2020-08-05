@@ -113,8 +113,6 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     tasks.CleanUp = Task($"{app.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
         .IsDependeeOf(Build.RunAll.Task.Name)
-        // ToDo: remove criteria from task, check in RecipeCleanUp alias
-        .WithCriteria(() => app.Errored || app.SkipRemainingTasks || Build.Local)
         .Does(() => RecipeCleanUp(app))
         .OnError(ex => RecipeOnError(app, tasks.CleanUp, ex));
 };

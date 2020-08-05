@@ -113,8 +113,6 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     tasks.CleanUp = Task($"{lib.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
         .IsDependeeOf(Build.RunAll.Task.Name)
-        // ToDo: remove criteria from task, check in RecipeCleanUp alias
-        .WithCriteria(() => lib.Errored || lib.SkipRemainingTasks || Build.Local)
         .Does(() => RecipeCleanUp(lib))
         .OnError(ex => RecipeOnError(lib, tasks.CleanUp, ex));
 };

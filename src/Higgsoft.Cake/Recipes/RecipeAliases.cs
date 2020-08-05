@@ -96,7 +96,10 @@ namespace Higgsoft.Cake.Recipes
         /// <param name="recipe">Recipe configuration</param>
         [CakeMethodAlias]
         public static void RecipeCleanUp(this ICakeContext context, Recipe recipe)
-            => context.RevertChanges(recipe.RevertSettings);
+        {
+            if (recipe.Errored || recipe.SkipRemainingTasks || Build.Local)
+                context.RevertChanges(recipe.RevertSettings);
+        }
 
 
         /// <summary>
