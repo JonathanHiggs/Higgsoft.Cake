@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
@@ -166,6 +167,73 @@ namespace Higgsoft.Cake.Recipes.Apps
             // ToDo: delete existing file if local build
 
             context.CopyFile(app.TempArtefactFile, app.ArtefactFile);
+        }
+
+
+        /// <summary>
+        /// Dynamically determines the clean-up tasks dependent task
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
+        /// <returns>Task builder of the penultimate task</returns>
+        [CakeMethodAlias]
+        public static CakeTaskBuilder DotNetAppCleanUpDependency(
+            this ICakeContext context,
+            DotNetApp app)
+        {
+            switch (Build.Target)
+            {
+                case "InfoOnly":
+                    return app.Tasks.Info;
+
+                case "BuildAll":
+                    return app.UsePostBuildTask ? app.Tasks.PostBuild : app.Tasks.Build;
+
+                case "TestAll":
+                    return app.Tasks.Test;
+
+                case "PackageAll":
+                    return app.Tasks.Package;
+
+                case "RunAll":
+                default:
+                    return app.Tasks.Push;
+
+            }
+        }
+
+
+        /// <summary>
+        /// Dynamically determines the clean-up tasks build dependee task
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="app">Recipe configuration</param>
+        /// <returns>Name of the build target task</returns>
+        [CakeMethodAlias]
+        public static string DotNetAppCleanUpDependee(
+            this ICakeContext context,
+            DotNetApp app)
+        {
+            switch (Build.Target)
+            {
+                case "InfoOnly":
+                    return Build.Targets.InfoOnly.Task.Name;
+
+                case "BuildAll":
+                    return Build.Targets.BuildAll.Task.Name;
+
+                case "TestAll":
+                    return Build.Targets.TestAll.Task.Name;
+
+                case "PackageAll":
+                    return Build.Targets.PackageAll.Task.Name;
+
+                case "RunAll":
+                default:
+                    return Build.EnableCommits && Build.EnablePush
+                        ? Build.Tasks.Push.Task.Name
+                        : Build.Targets.RunAll.Task.Name;
+            }
         }
     }
 }

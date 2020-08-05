@@ -60,19 +60,19 @@ Build.Tasks.Push = Task("Build-Push")
 // Targets
 ////////////////////
 
-Build.Targets.InfoOnly = Task("InfoOnly")
+Build.Targets.InfoOnly = Task("Build-InfoOnly")
     .IsDependentOn(Build.Tasks.Info)
     .Does(() => BuildStatus());
 
-Build.Targets.BuildAll = Task("BuildAll")
+Build.Targets.BuildAll = Task("Build-BuildAll")
     .Does(() => BuildStatus());
 
-Build.Targets.TestAll = Task("TestAll")
+Build.Targets.TestAll = Task("Build-TestAll")
     .Does(() => BuildStatus());
 
-Build.Targets.PackageAll = Task("PackageAll")
+Build.Targets.PackageAll = Task("Build-PackageAll")
     .Does(() => BuildStatus());
 
-Build.Targets.RunAll = Task("RunAll")
+Build.Targets.RunAll = Task("Build-RunAll")
     .IsDependentOn(Build.Tasks.Push)
     .Does(() => BuildStatus());

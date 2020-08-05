@@ -324,7 +324,7 @@ Task("RecipeTests")
 
 
 Task("Push")
-    .IsDependentOn("AliasTests")
+    .IsDependentOn("RecipeTests")
     .Does(() => {
         DotNetCoreNuGetDelete(
             project,
@@ -343,7 +343,7 @@ Task("Push")
 ////////////////////////
 
 Task("Default")
-    .IsDependentOn("RecipeTests")
+    .IsDependentOn("Push")
     .Does(() => Information("Default build completed"));
 
 
