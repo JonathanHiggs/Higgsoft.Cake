@@ -184,18 +184,23 @@ namespace Higgsoft.Cake.Recipes.Apps
             switch (Build.Target)
             {
                 case "InfoOnly":
+                case "Build-InfoOnly":
                     return app.Tasks.Info;
 
                 case "BuildAll":
+                case "Build-BuildAll":
                     return app.UsePostBuildTask ? app.Tasks.PostBuild : app.Tasks.Build;
 
                 case "TestAll":
+                case "Build-TestAll":
                     return app.Tasks.Test;
 
                 case "PackageAll":
+                case "Build-PackageAll":
                     return app.Tasks.Package;
 
                 case "RunAll":
+                case "Build-RunAll":
                 default:
                     return app.Tasks.Push;
 
@@ -217,18 +222,23 @@ namespace Higgsoft.Cake.Recipes.Apps
             switch (Build.Target)
             {
                 case "InfoOnly":
+                case "Build-InfoOnly":
                     return Build.Targets.InfoOnly.Task.Name;
 
                 case "BuildAll":
+                case "Build-BuildAll":
                     return Build.Targets.BuildAll.Task.Name;
 
                 case "TestAll":
+                case "Build-TestAll":
                     return Build.Targets.TestAll.Task.Name;
 
                 case "PackageAll":
+                case "Build-PackageAll":
                     return Build.Targets.PackageAll.Task.Name;
 
                 case "RunAll":
+                case "Build-RunAll":
                 default:
                     return Build.EnableCommits && Build.EnablePush
                         ? Build.Tasks.Push.Task.Name

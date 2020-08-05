@@ -19,7 +19,6 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
 
     tasks.Info = Task($"{lib.Id}-Info")
         .IsDependentOn(Build.Tasks.Check)
-        .IsDependeeOf(Build.Targets.InfoOnly.Task.Name)
         .Does(() => DotNetLibInfo(lib));
 
     tasks.Setup = Task($"{lib.Id}-Setup")
@@ -73,13 +72,11 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     if (lib.UsePostBuildTask)
         tasks.PostBuild = Task($"{lib.Id}-PostBuild")
             .IsDependentOn(tasks.Build)
-            .IsDependeeOf(Build.Targets.BuildAll.Task.Name)
             .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
             .OnError(ex => RecipeOnError(lib, tasks.PostBuild, ex));
 
     tasks.Test = Task($"{lib.Id}-Test")
         .IsDependentOn(lib.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
-        .IsDependeeOf(Build.Targets.TestAll.Task.Name)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => RecipeTest(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Test, ex));
@@ -97,22 +94,22 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibPackage(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Package, ex));
 
-    if (!Build.Local)
+    if (!Build.Local && Build.EnableCommits)
         tasks.Commit = Task($"{lib.Id}-Commit")
             .IsDependentOn(tasks.Package)
             .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
             .Does(() => RecipeCommit(lib))
             .OnError(ex => RecipeOnError(lib, tasks.Commit, ex));
-
+            
     tasks.Push = Task($"{lib.Id}-Push")
-        .IsDependentOn(!Build.Local ? tasks.Commit : tasks.Package)
+        .IsDependentOn(!Build.Local && Build.EnableCommits ? tasks.Commit : tasks.Package)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => DotNetLibPush(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Push, ex));
 
     tasks.CleanUp = Task($"{lib.Id}-CleanUp")
-        .IsDependentOn(tasks.Push)
-        .IsDependeeOf(Build.Tasks.Push.Task.Name)
+        .IsDependentOn(DotNetLibCleanUpDependency(lib))
+        .IsDependeeOf(DotNetLibCleanUpDependee(lib))
         .Does(() => RecipeCleanUp(lib))
         .OnError(ex => RecipeOnError(lib, tasks.CleanUp, ex));
 };

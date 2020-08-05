@@ -25,7 +25,7 @@ namespace Higgsoft.Cake.Recipes
         /// <summary>
         /// Gets and sets the build target
         /// </summary>
-        public static string Target { get; set; } = "RunAll";
+        public static string Target { get; set; } = "Build-RunAll";
 
 
         /// <summary>
