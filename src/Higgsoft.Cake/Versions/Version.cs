@@ -130,8 +130,8 @@ namespace Higgsoft.Cake.Versions
         /// <summary>
         /// Equality operator
         /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
+        /// <param name="lhs">Left operand</param>
+        /// <param name="rhs">Right operand</param>
         /// <returns></returns>
         public static bool operator ==(Version lhs, Version rhs)
             => !(lhs is null)
@@ -144,8 +144,8 @@ namespace Higgsoft.Cake.Versions
         /// <summary>
         /// Inequality operator
         /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
+        /// <param name="lhs">Left operand</param>
+        /// <param name="rhs">Right operand</param>
         /// <returns></returns>
         public static bool operator !=(Version lhs, Version rhs)
             => !(lhs == rhs);
@@ -154,8 +154,8 @@ namespace Higgsoft.Cake.Versions
         /// <summary>
         /// Greater-than operator
         /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
+        /// <param name="lhs">Left operand</param>
+        /// <param name="rhs">Right operand</param>
         /// <returns></returns>
         public static bool operator >(Version lhs, Version rhs)
             => lhs.Major > rhs.Major
@@ -166,8 +166,8 @@ namespace Higgsoft.Cake.Versions
         /// <summary>
         /// Less-than operator
         /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
+        /// <param name="lhs">Left operand</param>
+        /// <param name="rhs">Right operand</param>
         /// <returns></returns>
         public static bool operator <(Version lhs, Version rhs)
             => lhs.Major < rhs.Major
