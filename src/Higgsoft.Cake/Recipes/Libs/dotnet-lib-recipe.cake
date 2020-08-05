@@ -18,8 +18,8 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     var tasks = lib.Tasks;
 
     tasks.Info = Task($"{lib.Id}-Info")
-        .IsDependentOn(Build.PreBuild)
-        .IsDependeeOf(Build.InfoOnly.Task.Name)
+        .IsDependentOn(Build.Tasks.Check)
+        .IsDependeeOf(Build.Targets.InfoOnly.Task.Name)
         .Does(() => DotNetLibInfo(lib));
 
     tasks.Setup = Task($"{lib.Id}-Setup")
@@ -73,13 +73,13 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
     if (lib.UsePostBuildTask)
         tasks.PostBuild = Task($"{lib.Id}-PostBuild")
             .IsDependentOn(tasks.Build)
-            .IsDependeeOf(Build.BuildAll.Task.Name)
+            .IsDependeeOf(Build.Targets.BuildAll.Task.Name)
             .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
             .OnError(ex => RecipeOnError(lib, tasks.PostBuild, ex));
 
     tasks.Test = Task($"{lib.Id}-Test")
         .IsDependentOn(lib.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
-        .IsDependeeOf(Build.TestAll.Task.Name)
+        .IsDependeeOf(Build.Targets.TestAll.Task.Name)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => RecipeTest(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Test, ex));
@@ -92,7 +92,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
 
     tasks.Package = Task($"{lib.Id}-Package")
         .IsDependentOn(tasks.Publish)
-        .IsDependeeOf(Build.PackageAll.Task.Name)
+        .IsDependeeOf(Build.Targets.PackageAll.Task.Name)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => DotNetLibPackage(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Package, ex));
@@ -112,7 +112,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
 
     tasks.CleanUp = Task($"{lib.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
-        .IsDependeeOf(Build.RunAll.Task.Name)
+        .IsDependeeOf(Build.Tasks.Push.Task.Name)
         .Does(() => RecipeCleanUp(lib))
         .OnError(ex => RecipeOnError(lib, tasks.CleanUp, ex));
 };

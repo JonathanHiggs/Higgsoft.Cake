@@ -346,3 +346,4 @@ healthchecksdb
 /publish/
 /nuget/
 artefact/
+artefacts/

@@ -26,7 +26,6 @@ AddDotNetApp(app => {
     app.ReleaseNotesVNextFile       = File($"{app.SolutionDirectory}/ReleaseNotes.vnext.md");;
     app.PublishDirectory            = Directory($"{app.SolutionDirectory}/publish");
     app.PackageDirectory            = Directory($"{app.SolutionDirectory}/package");
-    app.ArtefactDirectory           = Directory($"{app.SolutionDirectory}/artefact");
 
     app.SharedAssemblyInfoFile      = false;
     app.UsePreBuildTask             = false;
@@ -35,7 +34,6 @@ AddDotNetApp(app => {
     app.UpdateAssemblyInfo          = false;
     app.CommitChanges               = false;
     app.TagVersion                  = false;
-    app.PushToRemote                = false;
 
     app.AddFrameworks("netcoreapp3.1");
     app.AddRuntimes("win10-x64", "linux-x64", "linux-arm64");

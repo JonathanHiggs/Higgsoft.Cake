@@ -67,8 +67,6 @@ namespace Higgsoft.Cake.Recipes.Libs
             context.Information($"Update Assembly Info      {lib.UpdateAssemblyInfo}");
             context.Information($"Commit Changes            {lib.CommitChanges}");
             context.Information($"Tag Version               {lib.TagVersion}");
-            context.Information($"Push To Remote            {lib.PushToRemote}");
-            context.Information($"Remote Name               {lib.RemoteName}");
             context.Information($"Frameworks                {string.Join(",", lib.Frameworks)}");
         }
 

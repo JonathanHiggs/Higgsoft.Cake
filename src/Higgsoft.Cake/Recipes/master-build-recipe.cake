@@ -22,12 +22,19 @@ Build.CheckUncommittedChanges   = Argument("check-uncommitted",     Build.CheckU
 Build.CheckUntrackedFiles       = Argument("check-untracked",       Build.CheckUntrackedFiles);
 
 Build.GitRoot                   = GitFindRootFromPath(MakeAbsolute(Directory(".")));
+Build.GitUserName               = Argument("git-username",          Build.GitUserName);
+Build.GitEmail                  = Argument("git-email",             Build.GitEmail);
+Build.GitRemoteName             = Argument("git-remote",            Build.GitRemoteName);
 Build.EnableCommits             = Argument("enable-commits",        Build.EnableCommits);
 Build.EnableTags                = Argument("enable-tags",           Build.EnableTags);
+Build.EnablePush                = Argument("enable-push",           Build.EnablePush);
 
 Build.NuGetSource               = Argument("nuget-source",          Build.NuGetSource);
 Build.NuGetLocalSource          = Argument("nuget-local-source",    Build.NuGetLocalSource);
 Build.NuGetApiKey               = Argument("nuget-api-key",         EnvironmentVariable("NUGET_API_KEY"));
+
+Build.ArtefactsRepository       = Argument("artefacts-repo",        Build.ArtefactsRepository);
+Build.ArtefactsLocalRepository  = Argument("artefacts-local-repo",  Build.ArtefactsLocalRepository);
 
 Build.SquirrelCentralRepository = Argument("squirrel-repo",         Build.SquirrelCentralRepository);
 Build.SquirrelLocalRepository   = Argument("squirrel-local-repo",   Build.SquirrelLocalRepository);
@@ -37,32 +44,35 @@ Build.SquirrelLocalRepository   = Argument("squirrel-local-repo",   Build.Squirr
 // Tasks
 ////////////////////
 
-Build.Info = Task("Info")
+Build.Tasks.Info = Task("Build-Info")
     .Does(() => BuildInfo());
 
-Build.PreBuild = Task("PreBuild")
-    .IsDependentOn("Info")
+Build.Tasks.Check = Task("Build-Check")
+    .IsDependentOn(Build.Tasks.Info)
     .Does(() => Check(Build.CheckSettings));
 
-// ToDo: Add push task
+Build.Tasks.Push = Task("Build-Push")
+    .WithCriteria(() => Build.EnableCommits && Build.EnablePush && !Build.Local)
+    .Does(() => BuildPush());
 
 
 //////////////////////
 // Targets
 ////////////////////
 
-Build.InfoOnly = Task("InfoOnly")
-    .IsDependentOn("Info")
+Build.Targets.InfoOnly = Task("InfoOnly")
+    .IsDependentOn(Build.Tasks.Info)
     .Does(() => BuildStatus());
 
-Build.BuildAll = Task("BuildAll")
+Build.Targets.BuildAll = Task("BuildAll")
     .Does(() => BuildStatus());
 
-Build.TestAll = Task("TestAll")
+Build.Targets.TestAll = Task("TestAll")
     .Does(() => BuildStatus());
 
-Build.PackageAll = Task("PackageAll")
+Build.Targets.PackageAll = Task("PackageAll")
     .Does(() => BuildStatus());
 
-Build.RunAll = Task("RunAll")
+Build.Targets.RunAll = Task("RunAll")
+    .IsDependentOn(Build.Tasks.Push)
     .Does(() => BuildStatus());

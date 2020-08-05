@@ -58,14 +58,12 @@ namespace Higgsoft.Cake.Recipes.Apps
             context.Information($"Release Notes File        {app.ReleaseNotesFile}");
             context.Information($"Publish Directory         {app.PublishDirectory}");
             context.Information($"Package Directory         {app.PackageDirectory}");
-            context.Information($"Artefacts Directory       {app.ArtefactDirectory}");
+            context.Information($"Artefacts Repository      {app.ArtefactsRepository}");
             context.Information("\nSettings");
             context.Information($"Prepare Release Notes     {app.PrepareReleaseNotes}");
             context.Information($"Update Assembly Info      {app.UpdateAssemblyInfo}");
             context.Information($"Commit Changes            {app.CommitChanges}");
             context.Information($"Tag Version               {app.TagVersion}");
-            context.Information($"Push To Remote            {app.PushToRemote}");
-            context.Information($"Remote Name               {app.RemoteName}");
             context.Information($"Runtimes                  {string.Join(",", app.Runtimes)}");
             context.Information($"Frameworks                {string.Join(",", app.Frameworks)}");
         }
@@ -81,7 +79,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         {
             context.EnsureDirectoryExists(app.PublishDirectory);
             context.EnsureDirectoryExists(app.PackageDirectory);
-            context.EnsureDirectoryExists(app.ArtefactDirectory);
+            context.EnsureDirectoryExists(app.ArtefactsRepository);
         }
 
 

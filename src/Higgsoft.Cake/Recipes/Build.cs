@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
@@ -46,6 +45,18 @@ namespace Higgsoft.Cake.Recipes
         /// </summary>
         public static string Company { get; set; } = string.Empty;
 
+
+        /// <summary>
+        /// Gets the build tasks
+        /// </summary>
+        public static BuildTasks Tasks { get; } = new BuildTasks();
+
+
+        /// <summary>
+        /// Gets the build targets
+        /// </summary>
+        public static BuildTargets Targets { get; } = new BuildTargets();
+
         #endregion
 
 
@@ -72,6 +83,9 @@ namespace Higgsoft.Cake.Recipes
         public static bool CheckUntrackedFiles { get; set; } = true;
 
 
+        /// <summary>
+        /// Gets the <see cref="Check.CheckSettings"/> for the build
+        /// </summary>
         public static CheckSettings CheckSettings
             => new CheckSettings {
                 GitRoot = GitRoot,
@@ -106,6 +120,12 @@ namespace Higgsoft.Cake.Recipes
 
 
         /// <summary>
+        /// Gets and sets the name of the git remote
+        /// </summary>
+        public static string GitRemoteName { get; set; } = "origin";
+
+
+        /// <summary>
         /// Gets and sets a flag that enables git repository commits
         /// </summary>
         public static bool EnableCommits { get; set; } = true;
@@ -115,6 +135,12 @@ namespace Higgsoft.Cake.Recipes
         /// Gets and sets a flag that enables git repository version tags
         /// </summary>
         public static bool EnableTags { get; set; } = true;
+
+
+        /// <summary>
+        /// Gets and sets a flag that enables the git remote push of commits
+        /// </summary>
+        public static bool EnablePush { get; set; } = true;
 
         #endregion
 
@@ -138,6 +164,23 @@ namespace Higgsoft.Cake.Recipes
         /// Gets and sets the NuGet api key
         /// </summary>
         public static string NuGetApiKey { get; set; }
+
+        #endregion
+
+
+        #region Artefacts
+
+        /// <summary>
+        /// Gets and sets the path to the artefacts repository
+        /// </summary>
+        public static DirectoryPath ArtefactsRepository { get; set; }
+
+
+        /// <summary>
+        /// Gets and sets the path to the local artefacts repository
+        /// </summary>
+        public static DirectoryPath ArtefactsLocalRepository { get; set; }
+            = new DirectoryPath("./artefacts");
 
         #endregion
 
@@ -167,52 +210,6 @@ namespace Higgsoft.Cake.Recipes
             => !Local
             ? new DirectoryPath($"{SquirrelCentralRepository}\\{id}")
             : SquirrelLocalRepository;
-
-        #endregion
-
-
-        #region Tasks
-
-        /// <summary>
-        /// Gets and sets the info task builder
-        /// </summary>
-        public static CakeTaskBuilder Info { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the info-only task builder
-        /// </summary>
-        public static CakeTaskBuilder InfoOnly { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the pre-build task builder
-        /// </summary>
-        public static CakeTaskBuilder PreBuild { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the build-all task builder
-        /// </summary>
-        public static CakeTaskBuilder BuildAll { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the test-all task builder
-        /// </summary>
-        public static CakeTaskBuilder TestAll { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the package-all task builder
-        /// </summary>
-        public static CakeTaskBuilder PackageAll { get; set; }
-
-
-        /// <summary>
-        /// Gets and sets the run-all task builder
-        /// </summary>
-        public static CakeTaskBuilder RunAll { get; set; }
 
         #endregion
 

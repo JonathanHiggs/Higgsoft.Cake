@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 using Cake.Common;
 using Cake.Core;
@@ -16,7 +17,7 @@ namespace Higgsoft.Cake.Commit
     public static class CommitAliases
     {
         /// <summary>
-        /// Commits and pushes changes to files made during the build process
+        /// Commits changes to files made during the build process
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="commitSettings">Settings to control the commit process</param>
@@ -57,17 +58,27 @@ namespace Higgsoft.Cake.Commit
 
             if (commitSettings.CreateVersionTag)
                 context.GitTag(commitSettings.GitRoot, $"v{commitSettings.Version}");
+        }
 
-            if (commitSettings.PushToRemote)
-            {
-                context.StartProcess(
-                    "git",
-                    new ProcessSettings { Arguments = $"push {commitSettings.GitRemote}" });
 
-                context.StartProcess(
-                    "git",
-                    new ProcessSettings { Arguments = $"push {commitSettings.GitRemote} --tags" });
-            }
+        /// <summary>
+        /// Pushes commits to the git remote
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="pushSettings">Settings to control the push</param>
+        [CakeMethodAlias]
+        public static void PushChanges(this ICakeContext context, PushSettings pushSettings)
+        {
+            var args = new StringBuilder();
+            args.Append($"push {pushSettings.Remote}");
+
+            if (pushSettings.Force)
+                args.Append(" --force");
+
+            if (pushSettings.Tags)
+                args.Append(" --tags");
+
+            context.StartProcess("git",new ProcessSettings { Arguments = args.ToString() });
         }
 
 

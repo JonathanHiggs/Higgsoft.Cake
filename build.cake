@@ -296,7 +296,8 @@ Task("RecipeTests")
                     { "local", "true" },
                     { "check-staged", "false" },
                     { "check-uncommitted", "false" },
-                    { "enable-commits", "false" } },
+                    { "enable-commits", "false" },
+                    { "enable-push", "false" } },
                 WorkingDirectory = Directory("./test/dotnet-lib") });
 
         CakeExecuteScript(
@@ -306,7 +307,8 @@ Task("RecipeTests")
                     { "local", "true" },
                     { "check-staged", "false" },
                     { "check-uncommitted", "false" },
-                    { "enable-commits", "false" } },
+                    { "enable-commits", "false" },
+                    { "enable-push", "false" } },
                 WorkingDirectory = Directory("./test/dotnet-app") });
 
         // Clean up

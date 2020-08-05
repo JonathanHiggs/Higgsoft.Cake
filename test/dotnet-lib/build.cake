@@ -23,8 +23,7 @@ AddDotNetLib(lib => {
     lib.ProjectFile                 = File($"{lib.SolutionDirectory}/{lib.Project}/{lib.Project}.csproj");
     lib.AssemblyInfoFile            = null;
     lib.ReleaseNotesFile            = File($"{lib.SolutionDirectory}/ReleaseNotes.md");
-    lib.ReleaseNotesVNextFile       = File($"{lib.SolutionDirectory}/ReleaseNotes.vnext.md");;
-    //lib.BuildDirectory              = null;
+    lib.ReleaseNotesVNextFile       = File($"{lib.SolutionDirectory}/ReleaseNotes.vnext.md");
     lib.PublishDirectory            = Directory($"{lib.SolutionDirectory}/publish");
     lib.NuGetDirectory              = Directory($"{lib.SolutionDirectory}/nuget");
 
@@ -35,7 +34,6 @@ AddDotNetLib(lib => {
     lib.UpdateAssemblyInfo          = false;
     lib.CommitChanges               = false;
     lib.TagVersion                  = false;
-    lib.PushToRemote                = false;
 
     lib.ProjectUrl                  = new Uri("https://github.com/JonathanHiggs/Higgsoft.Cake");
 

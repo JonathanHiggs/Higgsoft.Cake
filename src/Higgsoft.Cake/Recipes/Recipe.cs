@@ -209,21 +209,6 @@ namespace Higgsoft.Cake.Recipes
         /// </summary>
         public bool TagVersion { get; set; } = true;
 
-
-        /// <summary>
-        /// Gets and sets a flag that determines whether changes to the git repository is pushed to
-        /// a remote
-        /// </summary>
-        // ToDo: Move to build level
-        public bool PushToRemote { get; set; } = true;
-
-
-        /// <summary>
-        /// Gets and sets the name of the git remote
-        /// </summary>
-        // ToDo: Move to build level
-        public string RemoteName { get; set; } = "origin";
-
         #endregion
 
 
@@ -291,11 +276,9 @@ namespace Higgsoft.Cake.Recipes
                 CommitChanges = Build.EnableCommits && CommitChanges,
                 CreateVersionTag = Build.EnableTags && CommitChanges && TagVersion,
                 GitEmail = Build.GitEmail,
-                GitRemote = RemoteName,
                 GitRoot = Build.GitRoot,
                 GitUserName = Build.GitUserName,
                 ProductName = Name,
-                PushToRemote = PushToRemote,
                 Version = Version
             };
 

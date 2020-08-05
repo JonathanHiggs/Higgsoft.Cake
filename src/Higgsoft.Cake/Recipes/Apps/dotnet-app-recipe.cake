@@ -18,8 +18,8 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     var tasks = app.Tasks;
 
     tasks.Info = Task($"{app.Id}-Info")
-        .IsDependentOn(Build.PreBuild)
-        .IsDependeeOf(Build.InfoOnly.Task.Name)
+        .IsDependentOn(Build.Tasks.Check)
+        .IsDependeeOf(Build.Targets.InfoOnly.Task.Name)
         .Does(() => DotNetAppInfo(app));
 
     tasks.Setup = Task($"{app.Id}-Setup")
@@ -73,13 +73,13 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     if (app.UsePostBuildTask)
         tasks.PostBuild = Task($"{app.Id}-PostBuild")
             .IsDependentOn(tasks.Build)
-            .IsDependeeOf(Build.BuildAll.Task.Name)
+            .IsDependeeOf(Build.Targets.BuildAll.Task.Name) // ToDo: conditional on UsePoseBuild
             .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
             .OnError(ex => RecipeOnError(app, tasks.PostBuild, ex));
 
     tasks.Test = Task($"{app.Id}-Test")
         .IsDependentOn(app.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
-        .IsDependeeOf(Build.TestAll.Task.Name)
+        .IsDependeeOf(Build.Targets.TestAll.Task.Name)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .Does(() => RecipeTest(app))
         .OnError(ex => RecipeOnError(app, tasks.Test, ex));
@@ -92,7 +92,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
 
     tasks.Package = Task($"{app.Id}-Package")
         .IsDependentOn(tasks.Publish)
-        .IsDependeeOf(Build.PackageAll.Task.Name)
+        .IsDependeeOf(Build.Targets.PackageAll.Task.Name)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .Does(() => DotNetAppPackage(app))
         .OnError(ex => RecipeOnError(app, tasks.Package, ex));
@@ -110,9 +110,10 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => DotNetAppPush(app))
         .OnError(ex => RecipeOnError(app, tasks.Push, ex));
 
+    // ToDo: set dependent and dependee on build.target?
     tasks.CleanUp = Task($"{app.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
-        .IsDependeeOf(Build.RunAll.Task.Name)
+        .IsDependeeOf(Build.Tasks.Push.Task.Name)
         .Does(() => RecipeCleanUp(app))
         .OnError(ex => RecipeOnError(app, tasks.CleanUp, ex));
 };

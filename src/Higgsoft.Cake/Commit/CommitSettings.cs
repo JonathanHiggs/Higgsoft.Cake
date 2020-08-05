@@ -23,19 +23,6 @@ namespace Higgsoft.Cake.Commit
 
 
         /// <summary>
-        /// Gets and sets a flag that indicates whether commits and tags are pushed to the
-        /// specified git remote
-        /// </summary>
-        public bool PushToRemote { get; set; } = true;
-
-
-        /// <summary>
-        /// Gets and sets the name of the git upstream remote, defaults to "origin"
-        /// </summary>
-        public string GitRemote { get; set; } = "origin";
-
-
-        /// <summary>
         /// Gets and sets a collection of files that will be committed
         /// </summary>
         public ICollection<FilePath> Files { get; set; } = null;
