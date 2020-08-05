@@ -45,40 +45,40 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => RecipeReleaseNotes(lib))
         .OnError(ex => RecipeOnError(lib, tasks.ReleaseNotes, ex));
 
-    // ToDo: don't create task if not used
-    tasks.AssemblyInfo = Task($"{lib.Id}-AssemblyInfo")
-        .IsDependentOn(tasks.ReleaseNotes)
-        .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UpdateAssemblyInfo)
-        .Does(() => RecipeAssemblyInfo(lib))
-        .OnError(ex => RecipeOnError(lib, tasks.AssemblyInfo, ex));
+    if (lib.UpdateAssemblyInfo)
+        tasks.AssemblyInfo = Task($"{lib.Id}-AssemblyInfo")
+            .IsDependentOn(tasks.ReleaseNotes)
+            .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
+            .Does(() => RecipeAssemblyInfo(lib))
+            .OnError(ex => RecipeOnError(lib, tasks.AssemblyInfo, ex));
 
     tasks.Clean = Task($"{lib.Id}-Clean")
-        .IsDependentOn(tasks.AssemblyInfo)
+        .IsDependentOn(lib.UpdateAssemblyInfo ? tasks.AssemblyInfo : tasks.ReleaseNotes)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => DotNetLibClean(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Clean, ex));
 
-    // ToDo: don't create task if not used
-    tasks.PreBuild = Task($"{lib.Id}-PreBuild")
-        .IsDependentOn(tasks.Clean)
-        .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UsePreBuildTask)
-        .OnError(ex => RecipeOnError(lib, tasks.PreBuild, ex));
+    if (lib.UsePreBuildTask)
+        tasks.PreBuild = Task($"{lib.Id}-PreBuild")
+            .IsDependentOn(tasks.Clean)
+            .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
+            .OnError(ex => RecipeOnError(lib, tasks.PreBuild, ex));
 
     tasks.Build = Task($"{lib.Id}-Build")
-        .IsDependentOn(tasks.PreBuild)
+        .IsDependentOn(lib.UsePreBuildTask ? tasks.PreBuild : tasks.Clean)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .DoesForEach(lib.RestoreBuildSettings, settings => DotNetLibBuild(lib, settings))
         .OnError(ex => RecipeOnError(lib, tasks.Build, ex));
 
-    // ToDo: don't create task if not used
-    tasks.PostBuild = Task($"{lib.Id}-PostBuild")
-        .IsDependentOn(tasks.Build)
-        .IsDependeeOf(Build.BuildAll.Task.Name)
-        .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && lib.UsePostBuildTask)
-        .OnError(ex => RecipeOnError(lib, tasks.PostBuild, ex));
+    if (lib.UsePostBuildTask)
+        tasks.PostBuild = Task($"{lib.Id}-PostBuild")
+            .IsDependentOn(tasks.Build)
+            .IsDependeeOf(Build.BuildAll.Task.Name)
+            .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
+            .OnError(ex => RecipeOnError(lib, tasks.PostBuild, ex));
 
     tasks.Test = Task($"{lib.Id}-Test")
-        .IsDependentOn(tasks.PostBuild)
+        .IsDependentOn(lib.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
         .IsDependeeOf(Build.TestAll.Task.Name)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => RecipeTest(lib))
@@ -97,15 +97,15 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .Does(() => DotNetLibPackage(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Package, ex));
 
-    // ToDo: don't create task if not used
-    tasks.Commit = Task($"{lib.Id}-Commit")
-        .IsDependentOn(tasks.Package)
-        .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored && !Build.Local)
-        .Does(() => RecipeCommit(lib))
-        .OnError(ex => RecipeOnError(lib, tasks.Commit, ex));
+    if (!Build.Local)
+        tasks.Commit = Task($"{lib.Id}-Commit")
+            .IsDependentOn(tasks.Package)
+            .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
+            .Does(() => RecipeCommit(lib))
+            .OnError(ex => RecipeOnError(lib, tasks.Commit, ex));
 
     tasks.Push = Task($"{lib.Id}-Push")
-        .IsDependentOn(tasks.Commit)
+        .IsDependentOn(!Build.Local ? tasks.Commit : tasks.Package)
         .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
         .Does(() => DotNetLibPush(lib))
         .OnError(ex => RecipeOnError(lib, tasks.Push, ex));

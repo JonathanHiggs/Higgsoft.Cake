@@ -45,40 +45,40 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => RecipeReleaseNotes(app))
         .OnError(ex => RecipeOnError(app, tasks.ReleaseNotes, ex));
 
-    // ToDo: don't create task if not used
-    tasks.AssemblyInfo = Task($"{app.Id}-AssemblyInfo")
-        .IsDependentOn(tasks.ReleaseNotes)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.UpdateAssemblyInfo)
-        .Does(() => RecipeAssemblyInfo(app))
-        .OnError(ex => RecipeOnError(app, tasks.AssemblyInfo, ex));
+    if (app.UpdateAssemblyInfo)
+        tasks.AssemblyInfo = Task($"{app.Id}-AssemblyInfo")
+            .IsDependentOn(tasks.ReleaseNotes)
+            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
+            .Does(() => RecipeAssemblyInfo(app))
+            .OnError(ex => RecipeOnError(app, tasks.AssemblyInfo, ex));
 
     tasks.Clean = Task($"{app.Id}-Clean")
-        .IsDependentOn(tasks.AssemblyInfo)
+        .IsDependentOn(app.UpdateAssemblyInfo ? tasks.AssemblyInfo : tasks.ReleaseNotes)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .Does(() => DotNetAppClean(app))
         .OnError(ex => RecipeOnError(app, tasks.Clean, ex));
 
-    // ToDo: don't create task if not used
-    tasks.PreBuild = Task($"{app.Id}-PreBuild")
-        .IsDependentOn(tasks.Clean)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.UsePreBuildTask)
-        .OnError(ex => RecipeOnError(app, tasks.PreBuild, ex));
+    if (app.UsePreBuildTask)
+        tasks.PreBuild = Task($"{app.Id}-PreBuild")
+            .IsDependentOn(tasks.Clean)
+            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
+            .OnError(ex => RecipeOnError(app, tasks.PreBuild, ex));
 
     tasks.Build = Task($"{app.Id}-Build")
-        .IsDependentOn(tasks.PreBuild)
+        .IsDependentOn(app.UsePreBuildTask ? tasks.PreBuild : tasks.Clean)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .DoesForEach(app.RestoreBuildSettings, settings => DotNetAppRestoreBuild(app, settings))
         .OnError(ex => RecipeOnError(app, tasks.Build, ex));
 
-    // ToDo: don't create task if not used
-    tasks.PostBuild = Task($"{app.Id}-PostBuild")
-        .IsDependentOn(tasks.Build)
-        .IsDependeeOf(Build.BuildAll.Task.Name)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.UsePostBuildTask)
-        .OnError(ex => RecipeOnError(app, tasks.PostBuild, ex));
+    if (app.UsePostBuildTask)
+        tasks.PostBuild = Task($"{app.Id}-PostBuild")
+            .IsDependentOn(tasks.Build)
+            .IsDependeeOf(Build.BuildAll.Task.Name)
+            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
+            .OnError(ex => RecipeOnError(app, tasks.PostBuild, ex));
 
     tasks.Test = Task($"{app.Id}-Test")
-        .IsDependentOn(tasks.PostBuild)
+        .IsDependentOn(app.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
         .IsDependeeOf(Build.TestAll.Task.Name)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .Does(() => RecipeTest(app))
@@ -97,15 +97,15 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .Does(() => DotNetAppPackage(app))
         .OnError(ex => RecipeOnError(app, tasks.Package, ex));
 
-    // ToDo: don't create task if not used
-    tasks.Commit = Task($"{app.Id}-Commit")
-        .IsDependentOn(tasks.Package)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && !Build.Local)
-        .Does(() => RecipeCommit(app))
-        .OnError(ex => RecipeOnError(app, tasks.Commit, ex));
+    if (!Build.Local)
+        tasks.Commit = Task($"{app.Id}-Commit")
+            .IsDependentOn(tasks.Package)
+            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
+            .Does(() => RecipeCommit(app))
+            .OnError(ex => RecipeOnError(app, tasks.Commit, ex));
 
     tasks.Push = Task($"{app.Id}-Push")
-        .IsDependentOn(tasks.Commit)
+        .IsDependentOn(!Build.Local ? tasks.Commit : tasks.Package)
         .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
         .Does(() => DotNetAppPush(app))
         .OnError(ex => RecipeOnError(app, tasks.Push, ex));
@@ -113,6 +113,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     tasks.CleanUp = Task($"{app.Id}-CleanUp")
         .IsDependentOn(tasks.Push)
         .IsDependeeOf(Build.RunAll.Task.Name)
+        // ToDo: remove criteria from task, check in RecipeCleanUp alias
         .WithCriteria(() => app.Errored || app.SkipRemainingTasks || Build.Local)
         .Does(() => RecipeCleanUp(app))
         .OnError(ex => RecipeOnError(app, tasks.CleanUp, ex));
