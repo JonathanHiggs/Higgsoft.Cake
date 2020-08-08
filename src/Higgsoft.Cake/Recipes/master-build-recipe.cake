@@ -12,32 +12,7 @@ using Higgsoft.Cake.Recipes;
 // Arguments
 ////////////////////
 
-Build.Target                    = Argument("target",                Build.Target);
-Build.Configuration             = Argument("configuration",         Build.Configuration);
-Build.Verbosity                 = Argument("verbosity",             Build.Verbosity);
-Build.Local                     = Argument("local",                 Build.Local);
-
-Build.CheckStagedChanges        = Argument("check-staged",          Build.CheckStagedChanges);
-Build.CheckUncommittedChanges   = Argument("check-uncommitted",     Build.CheckUncommittedChanges);
-Build.CheckUntrackedFiles       = Argument("check-untracked",       Build.CheckUntrackedFiles);
-
-Build.GitRoot                   = GitFindRootFromPath(MakeAbsolute(Directory(".")));
-Build.GitUserName               = Argument("git-username",          Build.GitUserName);
-Build.GitEmail                  = Argument("git-email",             Build.GitEmail);
-Build.GitRemoteName             = Argument("git-remote",            Build.GitRemoteName);
-Build.EnableCommits             = Argument("enable-commits",        Build.EnableCommits);
-Build.EnableTags                = Argument("enable-tags",           Build.EnableTags);
-Build.EnablePush                = Argument("enable-push",           Build.EnablePush);
-
-Build.NuGetSource               = Argument("nuget-source",          Build.NuGetSource);
-Build.NuGetLocalSource          = Argument("nuget-local-source",    Build.NuGetLocalSource);
-Build.NuGetApiKey               = Argument("nuget-api-key",         EnvironmentVariable("NUGET_API_KEY"));
-
-Build.ArtefactsRepository       = Argument("artefacts-repo",        Build.ArtefactsRepository);
-Build.ArtefactsLocalRepository  = Argument("artefacts-local-repo",  Build.ArtefactsLocalRepository);
-
-Build.SquirrelCentralRepository = Argument("squirrel-repo",         Build.SquirrelCentralRepository);
-Build.SquirrelLocalRepository   = Argument("squirrel-local-repo",   Build.SquirrelLocalRepository);
+BuildConfigure();
 
 
 //////////////////////

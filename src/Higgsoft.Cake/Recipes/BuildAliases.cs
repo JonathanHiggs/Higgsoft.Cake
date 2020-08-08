@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 
+using Cake.Common;
 using Cake.Common.Diagnostics;
+using Cake.Common.IO;
 using Cake.Core;
 using Cake.Core.Annotations;
+using Cake.Git;
 
 using Higgsoft.Cake.Commit;
 
@@ -11,6 +14,120 @@ namespace Higgsoft.Cake.Recipes
     [CakeAliasCategory("Higgsoft.Build")]
     public static class BuildAliases
     {
+        /// <summary>
+        /// Reads build configuration from script arguments
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        [CakeMethodAlias]
+        public static void BuildConfigure(this ICakeContext context)
+        {
+            // Build args
+            Build.Target = 
+                CoerceTarget(context.Argument("target", Build.Target));
+            
+            Build.Configuration = 
+                context.Argument("configuration", Build.Configuration);
+            
+            Build.Verbosity = 
+                context.Argument("verbosity", Build.Verbosity);
+            
+            Build.Local = 
+                context.Argument("local", Build.Local);
+
+            // Check args
+            Build.CheckStagedChanges = 
+                context.Argument("check-staged", Build.CheckStagedChanges);
+            
+            Build.CheckUncommittedChanges = 
+                context.Argument("check-uncommitted", Build.CheckUncommittedChanges);
+            
+            Build.CheckUntrackedFiles = 
+                context.Argument("check-untracked", Build.CheckUntrackedFiles);
+
+            // Git args
+            Build.GitRoot = 
+                context.GitFindRootFromPath(context.MakeAbsolute(context.Directory(".")));
+            
+            Build.GitUserName = 
+                context.Argument("git-username", Build.GitUserName);
+            
+            Build.GitEmail = 
+                context.Argument("git-email", Build.GitEmail);
+            
+            Build.GitRemoteName = 
+                context.Argument("git-remote", Build.GitRemoteName);
+            
+            Build.EnableCommits = 
+                context.Argument("enable-commits", Build.EnableCommits);
+            
+            Build.EnableTags = 
+                context.Argument("enable-tags", Build.EnableTags);
+            
+            Build.EnablePush = 
+                context.Argument("enable-push", Build.EnablePush);
+
+            // NuGet args
+            Build.NuGetSource = 
+                context.Argument(
+                    "nuget-source", 
+                    context.EnvironmentVariable("NUGET_SOURCE") ?? Build.NuGetSource);
+            
+            Build.NuGetLocalSource = 
+                context.Argument(
+                    "nuget-local-source", 
+                    context.EnvironmentVariable("NUGET_LOCAL_SOURCE") ?? Build.NuGetLocalSource);
+            
+            Build.NuGetApiKey = 
+                context.Argument("nuget-api-key", context.EnvironmentVariable("NUGET_API_KEY"));
+
+            // Artefact args
+            Build.ArtefactsRepository = 
+                context.Argument(
+                    "artefacts-repo", 
+                    context.EnvironmentVariable("ARTEFACTS_REPO") ?? Build.ArtefactsRepository);
+
+            Build.ArtefactsLocalRepository = 
+                context.Argument(
+                    "artefacts-local-repo",
+                    context.EnvironmentVariable("ARTEFACTS_LOCAL_REPO") ?? Build.ArtefactsLocalRepository);
+
+            // Squirrel args
+            Build.SquirrelCentralRepository = 
+                context.Argument(
+                    "squirrel-repo",
+                    context.EnvironmentVariable("SQUIRREL_REPO") ?? Build.SquirrelCentralRepository);
+
+            Build.SquirrelLocalRepository = 
+                context.Argument(
+                    "squirrel-local-repo",
+                    context.EnvironmentVariable("SQUIRREL_LOCAL_REPO") ?? Build.SquirrelLocalRepository);
+        }
+
+
+        /// <summary>
+        /// Helper method to coerce the run-target to a valid target name
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string CoerceTarget(string target)
+        {
+            switch (target)
+            {
+                case "Info":
+                case "Check":
+                case "InfoOnly":
+                case "BuildAll":
+                case "TestAll":
+                case "PackageAll":
+                case "RunAll":
+                    return $"Build-{target}";
+
+                default:
+                    return target;
+            }
+        }
+
+
         /// <summary>
         /// Prints out build configuration information
         /// </summary>
