@@ -6,6 +6,7 @@ using Cake.Common.IO;
 using Cake.Common.Tools.DotNetCore;
 using Cake.Common.Tools.DotNetCore.NuGet.Delete;
 using Cake.Common.Tools.NuGet;
+using Cake.Common.Tools.NuGet.List;
 using Cake.Common.Tools.NuGet.Pack;
 using Cake.Core;
 using Cake.Core.Annotations;
@@ -184,20 +185,30 @@ namespace Higgsoft.Cake.Recipes.Libs
         [CakeMethodAlias]
         public static void DotNetLibPush(this ICakeContext context, DotNetLib lib)
         {
+            var pushSettings = lib.NuGetPushSettings;
+
             if (Build.Local)
             {
-                context.DotNetCoreNuGetDelete(
+                var hasPacakge = context.NuGetList(
                     lib.Id,
-                    lib.Version.ToString(),
-                    new DotNetCoreNuGetDeleteSettings {
-                        Source = "Local",
-                        NonInteractive = true
-                    });
+                    new NuGetListSettings {
+                        Source = new[] { pushSettings.Source },
+                    })
+                    .Any(i => i.Version == lib.Version.ToString());
+
+                if (hasPacakge)
+                    context.DotNetCoreNuGetDelete(
+                        lib.Id,
+                        lib.Version.ToString(),
+                        new DotNetCoreNuGetDeleteSettings {
+                            Source = pushSettings.Source,
+                            NonInteractive = true
+                        });
             }
 
             var file = context.File($"{lib.NuGetDirectory}/{lib.Id}.{lib.Version}.nupkg");
 
-            context.NuGetPush(file.Path, lib.NuGetPushSettings);
+            context.NuGetPush(file.Path, pushSettings);
         }
 
 
