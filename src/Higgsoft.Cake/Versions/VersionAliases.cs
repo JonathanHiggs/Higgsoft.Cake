@@ -10,6 +10,7 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
+using Cake.FileHelpers;
 
 using Higgsoft.Cake.ReleaseNotes;
 
@@ -175,6 +176,29 @@ namespace Higgsoft.Cake.Versions
                 throw new ArgumentNullException(nameof(settings));
 
             settings.Version = verson;
+        }
+
+
+        /// <summary>
+        /// Updates cake package references to point to a new version
+        /// </summary>
+        /// <param name="context">Cake runtime context</param>
+        /// <param name="globberPattern">Globber pattern to match files to replace text in</param>
+        /// <param name="packageName">Name of the nuget package to match</param>
+        /// <param name="version">New package version to set in the scripts</param>
+        [CakeMethodAlias]
+        public static void UpdateScriptVersion(
+            this ICakeContext context,
+            string globberPattern,
+            string packageName,
+            Version version)
+        {
+            var packageNamePattern = packageName.Replace(".", "\\.");
+
+            context.ReplaceRegexInFiles(
+                globberPattern,
+                $"{packageNamePattern}&version=\\d+\\.\\d+\\.\\d+",
+                $"{packageName}&version={version}");
         }
     }
 }
