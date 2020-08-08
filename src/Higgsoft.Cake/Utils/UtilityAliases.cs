@@ -26,7 +26,7 @@ namespace Higgsoft.Cake.Utils
         {
             var installSettings = new CakeInstallPackageSettings
             {
-                NugetDirectory = context.Directory("./nuget"),
+                NuGetDirectory = context.Directory("./nuget"),
                 ToolsDirectory = context.Directory("./tools")
             };
 
@@ -51,8 +51,8 @@ namespace Higgsoft.Cake.Utils
             if (string.IsNullOrEmpty(settings.Version))
                 throw new ArgumentNullException("Version is empty");
 
-            if (settings.NugetDirectory?.FullPath is null
-                || string.IsNullOrEmpty(settings.NugetDirectory.FullPath))
+            if (settings.NuGetDirectory?.FullPath is null
+                || string.IsNullOrEmpty(settings.NuGetDirectory.FullPath))
                 throw new ArgumentNullException("NuGet package path is empty");
 
             if (settings.ToolsDirectory?.FullPath is null
@@ -63,7 +63,7 @@ namespace Higgsoft.Cake.Utils
                 throw new ArgumentException("Not installing as addin or tool, call is redundent");
 
             var nugetPackage = context.File(
-                $"{settings.NugetDirectory}/{settings.Id}.{settings.Version}.nupkg");
+                $"{settings.NuGetDirectory}/{settings.Id}.{settings.Version}.nupkg");
 
             if (settings.AsAddin)
             {

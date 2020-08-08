@@ -23,7 +23,7 @@ namespace Higgsoft.Cake.Utils
         /// <summary>
         /// Gets and sets the path to the nuget package
         /// </summary>
-        public DirectoryPath NugetDirectory { get; set; }
+        public DirectoryPath NuGetDirectory { get; set; }
 
 
         /// <summary>
