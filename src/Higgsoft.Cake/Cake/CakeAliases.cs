@@ -6,13 +6,13 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
 
-namespace Higgsoft.Cake.Utils
+namespace Higgsoft.Cake.Cake
 {
     /// <summary>
-    /// Utility methods for installing nuget packages during cake script execution
+    /// Extension methods for installing nuget packages during cake script execution
     /// </summary>
-    [CakeAliasCategory("Higgsoft.Cake.Utils")]
-    public static class UtilityAliases
+    [CakeAliasCategory("Higgsoft.Cake.Cake")]
+    public static class CakeAliases
     {
         /// <summary>
         /// Installs a NuGet package into the cake tools directory

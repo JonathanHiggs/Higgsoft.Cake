@@ -1,6 +1,6 @@
 ﻿using Cake.Core.IO;
 
-namespace Higgsoft.Cake.Utils
+namespace Higgsoft.Cake.Cake
 {
     /// <summary>
     /// Settings to control manually installing a nuget package into cake tools directory

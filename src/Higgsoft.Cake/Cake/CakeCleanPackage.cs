@@ -1,6 +1,6 @@
 ﻿using Cake.Core.IO;
 
-namespace Higgsoft.Cake.Utils
+namespace Higgsoft.Cake.Cake
 {
     public class CakeCleanPackageSettings
     {
