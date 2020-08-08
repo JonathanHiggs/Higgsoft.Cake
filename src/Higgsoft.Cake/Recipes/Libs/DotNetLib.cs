@@ -219,5 +219,15 @@ namespace Higgsoft.Cake.Recipes.Libs
             };
 
         #endregion
+
+
+        /// <summary>
+        /// Coroutine called when <see cref="Id"/> value is set
+        /// </summary>
+        /// <param name="id"></param>
+        protected override void OnIdChanged(string id)
+        {
+            Tasks.Names = new DotNetLibTasks.TaskNames(id);
+        }
     }
 }

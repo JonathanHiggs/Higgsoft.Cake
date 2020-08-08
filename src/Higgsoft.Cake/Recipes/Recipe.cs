@@ -19,10 +19,21 @@ namespace Higgsoft.Cake.Recipes
     {
         #region General
 
+        private string id;
+
+
         /// <summary>
         /// Gets and sets the recipe identity
         /// </summary>
-        public string Id { get; set; }
+        public string Id 
+        {
+            get => id;
+            set
+            {
+                id = value;
+                OnIdChanged(id);
+            } 
+        }
 
 
         /// <summary>
@@ -309,5 +320,12 @@ namespace Higgsoft.Cake.Recipes
         /// <returns></returns>
         public override string ToString()
             => Name;
+
+
+        /// <summary>
+        /// Coroutine called when <see cref="Id"/> value is set
+        /// </summary>
+        /// <param name="id"></param>
+        protected abstract void OnIdChanged(string id);
     }
 }

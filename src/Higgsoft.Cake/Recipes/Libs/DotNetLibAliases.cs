@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
@@ -220,7 +219,7 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// <param name="lib">Recipe configuration</param>
         /// <returns>Task builder of the penultimate task</returns>
         [CakeMethodAlias]
-        public static CakeTaskBuilder DotNetLibCleanUpDependency(
+        public static string DotNetLibCleanUpDependency(
             this ICakeContext context,
             DotNetLib lib)
         {
@@ -228,24 +227,26 @@ namespace Higgsoft.Cake.Recipes.Libs
             {
                 case "InfoOnly":
                 case "Build-InfoOnly":
-                    return lib.Tasks.Info;
+                    return lib.Tasks.Info.Task.Name;
 
                 case "BuildAll":
                 case "Build-BuildAll":
-                    return lib.UsePostBuildTask ? lib.Tasks.PostBuild : lib.Tasks.Build;
+                    return lib.UsePostBuildTask 
+                        ? lib.Tasks.PostBuild.Task.Name 
+                        : lib.Tasks.Build.Task.Name;
 
                 case "TestAll":
                 case "Build-TestAll":
-                    return lib.Tasks.Test;
+                    return lib.Tasks.Test.Task.Name;
 
                 case "PackageAll":
                 case "Build-PackageAll":
-                    return lib.Tasks.Package;
+                    return lib.Tasks.Package.Task.Name;
 
                 case "RunAll":
                 case "Build-RunAll":
                 default:
-                    return lib.Tasks.Push;
+                    return lib.Tasks.Push.Task.Name;
 
             }
         }
@@ -258,7 +259,7 @@ namespace Higgsoft.Cake.Recipes.Libs
         /// <param name="lib">Recipe configuration</param>
         /// <returns>Task builder for the run target</returns>
         [CakeMethodAlias]
-        public static CakeTaskBuilder DotNetLibCleanUpDependee(
+        public static string DotNetLibCleanUpDependee(
             this ICakeContext context,
             DotNetLib lib)
         {
@@ -266,84 +267,109 @@ namespace Higgsoft.Cake.Recipes.Libs
             {
                 case "InfoOnly":
                 case "Build-InfoOnly":
-                    return Build.Targets.InfoOnly;
+                    return Build.Targets.InfoOnly.Task.Name;
 
                 case "BuildAll":
                 case "Build-BuildAll":
-                    return Build.Targets.BuildAll;
+                    return Build.Targets.BuildAll.Task.Name;
 
                 case "TestAll":
                 case "Build-TestAll":
-                    return Build.Targets.TestAll;
+                    return Build.Targets.TestAll.Task.Name;
 
                 case "PackageAll":
                 case "Build-PackageAll":
-                    return Build.Targets.PackageAll;
+                    return Build.Targets.PackageAll.Task.Name;
 
                 case "RunAll":
                 case "Build-RunAll":
                 default:
                     return Build.EnableCommits && Build.EnablePush
-                        ? Build.Tasks.Push
-                        : Build.Targets.RunAll;
+                        ? Build.Tasks.Push.Task.Name
+                        : Build.Targets.RunAll.Task.Name;
             }
         }
 
 
         /// <summary>
-        /// Configures the depencency, criteria and error handling for a dotnet-lib task
+        /// Configures the dependency, criteria and error handling for a dotnet-lib recipe task
         /// </summary>
         /// <param name="builder">Cake task builder</param>
-        /// <param name="lib"><see cref="DotNetLib"/> configuration</param>
-        /// <param name="prev">Depencent task builder</param>
-        /// <param name="before">Dependee task builder</param>
+        /// <param name="lib"><see cref="DotNetLib"/> recipe configuration</param>
+        /// <param name="dependentOn">Dependent task builder</param>
+        /// <param name="dependee">Dependee task builder</param>
         /// <returns></returns>
         public static CakeTaskBuilder ConfigTaskFor(
             this CakeTaskBuilder builder,
             DotNetLib lib,
-            CakeTaskBuilder prev,
-            CakeTaskBuilder before = null)
+            CakeTaskBuilder dependentOn,
+            CakeTaskBuilder dependee)
+        {
+            if (dependentOn is null)
+                throw new ArgumentNullException($"Dependent task is null");
+
+            if (dependee is null)
+                throw new ArgumentNullException($"Dependee task is null");
+
+            builder.ConfigTaskFor(lib, dependentOn.Task.Name, dependee.Task.Name);
+            return builder;
+        }
+
+
+        /// <summary>
+        /// Configures the depencency, criteria and error handling for a dotnet-lib recipe task
+        /// </summary>
+        /// <param name="builder">Cake task builder</param>
+        /// <param name="lib"><see cref="DotNetLib"/> recipe configuration</param>
+        /// <param name="dependentOn">Depencent task name</param>
+        /// <param name="dependee">Dependee task name</param>
+        /// <returns></returns>
+        public static CakeTaskBuilder ConfigTaskFor(
+            this CakeTaskBuilder builder,
+            DotNetLib lib,
+            string dependentOn,
+            string dependee = null)
         {
             // Bump depencency forward based on lib config
-            if (prev == lib.Tasks.Commit && !lib.UseCommitTask)
-                prev = lib.Tasks.Package;
+            if (dependentOn == lib.Tasks.Names.Commit && !lib.UseCommitTask)
+                dependentOn = lib.Tasks.Names.Package;
 
-            if (prev == lib.Tasks.PostBuild && !lib.UsePostBuildTask)
-                prev = lib.Tasks.Build;
-
-            if (prev == lib.Tasks.PreBuild && !lib.UsePreBuildTask)
-                prev = lib.Tasks.Clean;
-
-            if (prev == lib.Tasks.AssemblyInfo && !lib.UpdateAssemblyInfo)
-                prev = lib.Tasks.ReleaseNotes;
-
-            if (prev == lib.Tasks.ReleaseNotes && !lib.PrepareReleaseNotes)
-                prev = lib.Tasks.Version;
-
+            if (dependentOn == lib.Tasks.Names.PostBuild && !lib.UsePostBuildTask)
+                dependentOn = lib.Tasks.Names.Build;
+                    
+            if (dependentOn == lib.Tasks.Names.PreBuild && !lib.UsePreBuildTask)
+                dependentOn = lib.Tasks.Names.Clean;
+                    
+            if (dependentOn == lib.Tasks.Names.AssemblyInfo && !lib.UpdateAssemblyInfo)
+                dependentOn = lib.Tasks.Names.ReleaseNotes;
+                    
+            if (dependentOn == lib.Tasks.Names.ReleaseNotes && !lib.PrepareReleaseNotes)
+                dependentOn = lib.Tasks.Names.Version;
+                    
             builder
-                .IsDependentOn(prev)
+                .IsDependentOn(dependentOn)
                 .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
                 .OnError(ex => { lib.SetError(builder, ex); });
 
             // Bump dependee back based on lib config
-            if (!(before is null))
+            if (!string.IsNullOrEmpty(dependee))
             {
-                if (before == lib.Tasks.ReleaseNotes && !lib.PrepareReleaseNotes)
-                    before = lib.Tasks.AssemblyInfo;
-
-                if (before == lib.Tasks.AssemblyInfo && !lib.UpdateAssemblyInfo)
-                    before = lib.Tasks.Clean;
-
-                if (before == lib.Tasks.PreBuild && !lib.UsePreBuildTask)
-                    before = lib.Tasks.Build;
-
-                if (before == lib.Tasks.PostBuild && !lib.UsePostBuildTask)
-                    before = lib.Tasks.Test;
-
-                if (before == lib.Tasks.Commit && !lib.UseCommitTask)
-                    before = lib.Tasks.Push;
-
-                builder.IsDependeeOf(before.Task.Name);
+                if (dependee == lib.Tasks.Names.ReleaseNotes && !lib.PrepareReleaseNotes)
+                    dependee = lib.Tasks.Names.AssemblyInfo;
+                        
+                if (dependee == lib.Tasks.Names.AssemblyInfo && !lib.UpdateAssemblyInfo)
+                    dependee = lib.Tasks.Names.Clean;
+                        
+                if (dependee == lib.Tasks.Names.PreBuild && !lib.UsePreBuildTask)
+                    dependee = lib.Tasks.Names.Build;
+                        
+                if (dependee == lib.Tasks.Names.PostBuild && !lib.UsePostBuildTask)
+                    dependee = lib.Tasks.Names.Test;
+                        
+                if (dependee == lib.Tasks.Names.Commit && !lib.UseCommitTask)
+                    dependee = lib.Tasks.Names.Push;
+                        
+                builder.IsDependeeOf(dependee);
             }
 
             return builder;

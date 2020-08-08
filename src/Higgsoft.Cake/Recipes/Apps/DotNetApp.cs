@@ -144,5 +144,13 @@ namespace Higgsoft.Cake.Recipes.Apps
             => new FilePath($"{ArtefactsRepository}\\{Id}.{Version}.zip");
 
         #endregion
+
+
+        /// <summary>
+        /// Coroutine called when <see cref="Id"/> value is set
+        /// </summary>
+        /// <param name="id"></param>
+        protected override void OnIdChanged(string id)
+        { }
     }
 }
