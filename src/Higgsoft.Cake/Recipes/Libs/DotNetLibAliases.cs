@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
@@ -286,6 +287,32 @@ namespace Higgsoft.Cake.Recipes.Libs
                         ? Build.Tasks.Push.Task.Name
                         : Build.Targets.RunAll.Task.Name;
             }
+        }
+
+
+        /// <summary>
+        /// Configures the depencency, criteria and error handling for a dotnet-lib task
+        /// </summary>
+        /// <param name="builder">Cake task builder</param>
+        /// <param name="lib"><see cref="DotNetLib"/> configuration</param>
+        /// <param name="prev">Depencent task builder</param>
+        /// <param name="before">Dependee task builder</param>
+        /// <returns></returns>
+        public static CakeTaskBuilder ConfigTaskFor(
+            this CakeTaskBuilder builder,
+            DotNetLib lib,
+            CakeTaskBuilder prev,
+            CakeTaskBuilder before = null)
+        {
+            builder
+                .IsDependentOn(prev)
+                .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
+                .OnError(ex => { lib.SetError(builder, ex); });
+
+            if (!(before is null))
+                builder.IsDependeeOf(before.Task.Name);
+
+            return builder;
         }
     }
 }
