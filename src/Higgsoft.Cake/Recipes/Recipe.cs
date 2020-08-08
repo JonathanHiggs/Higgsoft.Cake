@@ -108,6 +108,12 @@ namespace Higgsoft.Cake.Recipes
 
 
         /// <summary>
+        /// Gets a flag that determines whether any changes made during the build are committed
+        /// </summary>
+        public bool UseCommitTask => !Build.Local && Build.EnableCommits && CommitChanges;
+
+
+        /// <summary>
         /// Gets and sets a flag that aborts the remaining tasks in the build pipeline once toggled
         /// </summary>
         public bool SkipRemainingTasks { get; set; } = false;

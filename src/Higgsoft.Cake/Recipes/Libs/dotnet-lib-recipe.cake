@@ -40,26 +40,19 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
 
     if (lib.UpdateAssemblyInfo)
         tasks.AssemblyInfo = Task($"{lib.Id}-AssemblyInfo")
-            .ConfigTaskFor(
-                lib, 
-                lib.PrepareReleaseNotes ? tasks.ReleaseNotes : tasks.Version)
+            .ConfigTaskFor(lib, tasks.ReleaseNotes)
             .Does(() => RecipeAssemblyInfo(lib));
 
     tasks.Clean = Task($"{lib.Id}-Clean")
-        .ConfigTaskFor(
-            lib, 
-            lib.UpdateAssemblyInfo ? tasks.AssemblyInfo : 
-            lib.PrepareReleaseNotes ? tasks.ReleaseNotes : tasks.Version)
+        .ConfigTaskFor(lib, tasks.AssemblyInfo)
         .Does(() => DotNetLibClean(lib));
 
     if (lib.UsePreBuildTask)
         tasks.PreBuild = Task($"{lib.Id}-PreBuild")
-            .ConfigTaskFor(tasks.Clean);;
+            .ConfigTaskFor(lib, tasks.Clean);;
 
     tasks.Build = Task($"{lib.Id}-Build")
-        .ConfigTaskFor(
-            lib,
-            lib.UsePreBuildTask ? tasks.PreBuild : tasks.Clean)
+        .ConfigTaskFor(lib, tasks.PreBuild)
         .DoesForEach(lib.RestoreBuildSettings, settings => DotNetLibBuild(lib, settings));
 
     if (lib.UsePostBuildTask)
@@ -67,7 +60,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
             .ConfigTaskFor(lib, tasks.Build);
 
     tasks.Test = Task($"{lib.Id}-Test")
-        .ConfigTaskFor(lib, lib.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
+        .ConfigTaskFor(lib, tasks.PostBuild)
         .Does(() => RecipeTest(lib));
 
     tasks.Publish = Task($"{lib.Id}-Publish")
@@ -78,15 +71,13 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .ConfigTaskFor(lib, tasks.Publish)
         .Does(() => DotNetLibPackage(lib));
 
-    if (!Build.Local && Build.EnableCommits)
+    if (lib.UseCommitTask)
         tasks.Commit = Task($"{lib.Id}-Commit")
             .ConfigTaskFor(lib, tasks.Package)
             .Does(() => RecipeCommit(lib));
             
     tasks.Push = Task($"{lib.Id}-Push")
-        .ConfigTaskFor(
-            lib,
-            !Build.Local && Build.EnableCommits ? tasks.Commit : tasks.Package)
+        .ConfigTaskFor(lib, tasks.Commit)
         .Does(() => DotNetLibPush(lib));
 
     tasks.CleanUp = Task($"{lib.Id}-CleanUp")
