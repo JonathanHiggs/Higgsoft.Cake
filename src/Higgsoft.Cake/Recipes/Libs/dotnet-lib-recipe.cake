@@ -81,6 +81,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .ConfigTaskFor(lib, names.Commit)
         .Does(() => DotNetLibPush(lib));
 
+    // ToDo: manually setup the cleanup so it doesn't skip
     tasks.CleanUp = Task(names.CleanUp)
         .ConfigTaskFor(
             lib,

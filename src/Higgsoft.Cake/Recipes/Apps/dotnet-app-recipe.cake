@@ -79,7 +79,8 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     tasks.Push = Task(names.Push)
         .ConfigTaskFor(app, names.Commit)
         .Does(() => DotNetAppPush(app));
-
+        
+    // ToDo: manually setup the cleanup so it doesn't skip
     tasks.CleanUp = Task(names.CleanUp)
         .ConfigTaskFor(
             app, 
