@@ -12,6 +12,7 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
 using Cake.Core.Scripting;
+using Cake.Git;
 
 namespace Higgsoft.Cake.Recipes.Libs
 {
@@ -173,7 +174,17 @@ namespace Higgsoft.Cake.Recipes.Libs
                 } break;
             }
 
-            context.NuGetPack(lib.NuGetPackSettings);
+            var settings = lib.NuGetPackSettings;
+
+            settings.Repository = new NuGetRepository
+            {
+                Branch = context.GitBranchCurrent(Build.GitRoot).CanonicalName,
+                Commit = context.GitBranchCurrent(Build.GitRoot).Tip.Sha,
+                Type = "git",
+                Url = lib.ProjectUrl.ToString()
+            };
+
+            context.NuGetPack(settings);
             context.Information($"Packed: {lib.NuGetDirectory}/{lib.Id}.{lib.Version}.nupkg");
         }
 
