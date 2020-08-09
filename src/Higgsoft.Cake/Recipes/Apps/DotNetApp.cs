@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Cake.Common.Tools.DotNetCore.Build;
@@ -151,6 +150,8 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// </summary>
         /// <param name="id"></param>
         protected override void OnIdChanged(string id)
-        { }
+        {
+            Tasks.Names = new DotNetAppTasks.TaskNames(id);
+        }
     }
 }

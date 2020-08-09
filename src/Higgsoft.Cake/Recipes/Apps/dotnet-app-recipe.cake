@@ -16,101 +16,76 @@ using Higgsoft.Cake.Recipes.Apps;
 
 Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     var tasks = app.Tasks;
+    var names = tasks.Names;
 
-    tasks.Info = Task($"{app.Id}-Info")
-        .IsDependentOn(Build.Tasks.Check)
+    tasks.Info = Task(names.Info)
+        .ConfigTaskFor(app, Build.Tasks.Check.Task.Name)
         .Does(() => DotNetAppInfo(app));
 
-    tasks.Setup = Task($"{app.Id}-Setup")
-        .IsDependentOn(tasks.Info)
-        .Does(() => DotNetAppSetup(app))
-        .OnError(ex => RecipeOnError(app, tasks.Setup, ex));
+    tasks.Setup = Task(names.Setup)
+        .ConfigTaskFor(app, names.Info)
+        .Does(() => DotNetAppSetup(app));
 
-    tasks.Check = Task($"{app.Id}-Check")
-        .IsDependentOn(tasks.Setup)
-        .WithCriteria(() => !app.Errored)
-        .Does(() => RecipeCheck(app))
-        .OnError(ex => RecipeOnError(app, tasks.Check, ex));
+    tasks.Check = Task(names.Check)
+        .ConfigTaskFor(app, names.Setup)
+        .Does(() => RecipeCheck(app));
 
-    tasks.Version = Task($"{app.Id}-Version")
-        .IsDependentOn(tasks.Check)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .Does(() => RecipeVersion(app))
-        .OnError(ex => RecipeOnError(app, tasks.Version, ex));
+    tasks.Version = Task(names.Version)
+        .ConfigTaskFor(app, names.Check)
+        .Does(() => RecipeVersion(app));
 
-    tasks.ReleaseNotes = Task($"{app.Id}-ReleaseNotes")
-        .IsDependentOn(tasks.Version)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored && app.PrepareReleaseNotes)
-        .Does(() => RecipeReleaseNotes(app))
-        .OnError(ex => RecipeOnError(app, tasks.ReleaseNotes, ex));
+    tasks.ReleaseNotes = Task(names.ReleaseNotes)
+        .ConfigTaskFor(app, names.Version)
+        .Does(() => RecipeReleaseNotes(app));
 
     if (app.UpdateAssemblyInfo)
-        tasks.AssemblyInfo = Task($"{app.Id}-AssemblyInfo")
-            .IsDependentOn(tasks.ReleaseNotes)
-            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-            .Does(() => RecipeAssemblyInfo(app))
-            .OnError(ex => RecipeOnError(app, tasks.AssemblyInfo, ex));
+        tasks.AssemblyInfo = Task(names.AssemblyInfo)
+            .ConfigTaskFor(app, names.ReleaseNotes)
+            .Does(() => RecipeAssemblyInfo(app));
 
-    tasks.Clean = Task($"{app.Id}-Clean")
-        .IsDependentOn(app.UpdateAssemblyInfo ? tasks.AssemblyInfo : tasks.ReleaseNotes)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .Does(() => DotNetAppClean(app))
-        .OnError(ex => RecipeOnError(app, tasks.Clean, ex));
+    tasks.Clean = Task(names.Clean)
+        .ConfigTaskFor(app, names.AssemblyInfo)
+        .Does(() => DotNetAppClean(app));
 
     if (app.UsePreBuildTask)
-        tasks.PreBuild = Task($"{app.Id}-PreBuild")
-            .IsDependentOn(tasks.Clean)
-            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-            .OnError(ex => RecipeOnError(app, tasks.PreBuild, ex));
+        tasks.PreBuild = Task(names.PreBuild)
+            .ConfigTaskFor(app, names.Clean);
 
-    tasks.Build = Task($"{app.Id}-Build")
-        .IsDependentOn(app.UsePreBuildTask ? tasks.PreBuild : tasks.Clean)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .DoesForEach(app.RestoreBuildSettings, settings => DotNetAppRestoreBuild(app, settings))
-        .OnError(ex => RecipeOnError(app, tasks.Build, ex));
+    tasks.Build = Task(names.Build)
+        .ConfigTaskFor(app, names.PreBuild)
+        .DoesForEach(app.RestoreBuildSettings, settings => DotNetAppRestoreBuild(app, settings));
 
     if (app.UsePostBuildTask)
-        tasks.PostBuild = Task($"{app.Id}-PostBuild")
-            .IsDependentOn(tasks.Build)
-            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-            .OnError(ex => RecipeOnError(app, tasks.PostBuild, ex));
+        tasks.PostBuild = Task(names.PostBuild)
+            .ConfigTaskFor(app, names.Build);
 
-    tasks.Test = Task($"{app.Id}-Test")
-        .IsDependentOn(app.UsePostBuildTask ? tasks.PostBuild : tasks.Build)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .Does(() => RecipeTest(app))
-        .OnError(ex => RecipeOnError(app, tasks.Test, ex));
+    tasks.Test = Task(names.Test)
+        .ConfigTaskFor(app, names.PostBuild)
+        .Does(() => RecipeTest(app));
 
-    tasks.Publish = Task($"{app.Id}-Publish")
-        .IsDependentOn(tasks.Test)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .DoesForEach(app.RestorePublishSettings, settings => DotNetAppRestorePublish(app, settings))
-        .OnError(ex => RecipeOnError(app, tasks.Publish, ex));
+    tasks.Publish = Task(names.Publish)
+        .ConfigTaskFor(app, names.Test)
+        .DoesForEach(app.RestorePublishSettings, settings => DotNetAppRestorePublish(app, settings));
 
-    tasks.Package = Task($"{app.Id}-Package")
-        .IsDependentOn(tasks.Publish)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .Does(() => DotNetAppPackage(app))
-        .OnError(ex => RecipeOnError(app, tasks.Package, ex));
+    tasks.Package = Task(names.Package)
+        .ConfigTaskFor(app, names.Publish)
+        .Does(() => DotNetAppPackage(app));
 
     if (!Build.Local && Build.EnableCommits)
-        tasks.Commit = Task($"{app.Id}-Commit")
-            .IsDependentOn(tasks.Package)
-            .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-            .Does(() => RecipeCommit(app))
-            .OnError(ex => RecipeOnError(app, tasks.Commit, ex));
+        tasks.Commit = Task(names.Commit)
+            .ConfigTaskFor(app, names.Package)
+            .Does(() => RecipeCommit(app));
 
-    tasks.Push = Task($"{app.Id}-Push")
-        .IsDependentOn(!Build.Local && Build.EnableCommits ? tasks.Commit : tasks.Package)
-        .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
-        .Does(() => DotNetAppPush(app))
-        .OnError(ex => RecipeOnError(app, tasks.Push, ex));
+    tasks.Push = Task(names.Push)
+        .ConfigTaskFor(app, names.Commit)
+        .Does(() => DotNetAppPush(app));
 
-    tasks.CleanUp = Task($"{app.Id}-CleanUp")
-        .IsDependentOn(DotNetAppCleanUpDependency(app))
-        .IsDependeeOf(DotNetAppCleanUpDependee(app))
-        .Does(() => RecipeCleanUp(app))
-        .OnError(ex => RecipeOnError(app, tasks.CleanUp, ex));
+    tasks.CleanUp = Task(names.CleanUp)
+        .ConfigTaskFor(
+            app, 
+            DotNetAppCleanUpDependency(app),
+            DotNetAppCleanUpDependee(app))
+        .Does(() => RecipeCleanUp(app));
 };
 
 

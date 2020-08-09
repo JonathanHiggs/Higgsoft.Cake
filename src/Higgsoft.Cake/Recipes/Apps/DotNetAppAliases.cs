@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
@@ -177,7 +176,7 @@ namespace Higgsoft.Cake.Recipes.Apps
         /// <param name="app">Recipe configuration</param>
         /// <returns>Task builder of the penultimate task</returns>
         [CakeMethodAlias]
-        public static CakeTaskBuilder DotNetAppCleanUpDependency(
+        public static string DotNetAppCleanUpDependency(
             this ICakeContext context,
             DotNetApp app)
         {
@@ -185,24 +184,26 @@ namespace Higgsoft.Cake.Recipes.Apps
             {
                 case "InfoOnly":
                 case "Build-InfoOnly":
-                    return app.Tasks.Info;
+                    return app.Tasks.Names.Info;
 
                 case "BuildAll":
                 case "Build-BuildAll":
-                    return app.UsePostBuildTask ? app.Tasks.PostBuild : app.Tasks.Build;
+                    return app.UsePostBuildTask 
+                        ? app.Tasks.Names.PostBuild 
+                        : app.Tasks.Names.Build;
 
                 case "TestAll":
                 case "Build-TestAll":
-                    return app.Tasks.Test;
+                    return app.Tasks.Names.Test;
 
                 case "PackageAll":
                 case "Build-PackageAll":
-                    return app.Tasks.Package;
+                    return app.Tasks.Names.Package;
 
                 case "RunAll":
                 case "Build-RunAll":
                 default:
-                    return app.Tasks.Push;
+                    return app.Tasks.Names.Push;
 
             }
         }
@@ -244,6 +245,91 @@ namespace Higgsoft.Cake.Recipes.Apps
                         ? Build.Tasks.Push.Task.Name
                         : Build.Targets.RunAll.Task.Name;
             }
+        }
+
+
+        /// <summary>
+        /// Configures the dependency, criteria and error handling for a dotnet-app recipe task
+        /// </summary>
+        /// <param name="builder">Cake task builder</param>
+        /// <param name="app"><see cref="DotNetApp"/> recipe configuration</param>
+        /// <param name="dependentOn">Dependent task builder</param>
+        /// <param name="dependee">Dependee task builder</param>
+        /// <returns></returns>
+        public static CakeTaskBuilder ConfigTaskFor(
+            this CakeTaskBuilder builder,
+            DotNetApp app,
+            CakeTaskBuilder dependentOn,
+            CakeTaskBuilder dependee)
+        {
+            if (dependentOn is null)
+                throw new ArgumentNullException("Dependent task is null");
+
+            if (dependee is null)
+                throw new ArgumentNullException("Dependee task is null");
+
+            builder.ConfigTaskFor(app, dependentOn.Task.Name, dependee.Task.Name);
+            return builder;
+        }
+
+
+        /// <summary>
+        /// Configures the dependency, criteria and error handling for a dotnet-app recipe task
+        /// </summary>
+        /// <param name="builder">Cake task builder</param>
+        /// <param name="app"><see cref="DotNetApp"/> recipe configuration</param>
+        /// <param name="dependentOn">Dependent task name</param>
+        /// <param name="dependee">Dependee task name</param>
+        /// <returns></returns>
+        public static CakeTaskBuilder ConfigTaskFor(
+            this CakeTaskBuilder builder,
+            DotNetApp app,
+            string dependentOn,
+            string dependee = null)
+        {
+            // Bump depencent task forward based on recipe config
+            if (dependentOn == app.Tasks.Names.Commit && !app.UseCommitTask)
+                dependentOn = app.Tasks.Names.Package;
+
+            if (dependentOn == app.Tasks.Names.PostBuild && !app.UsePostBuildTask)
+                dependentOn = app.Tasks.Names.Build;
+
+            if (dependentOn == app.Tasks.Names.PreBuild && !app.UsePreBuildTask)
+                dependentOn = app.Tasks.Names.Clean;
+
+            if (dependentOn == app.Tasks.Names.AssemblyInfo && !app.UpdateAssemblyInfo)
+                dependentOn = app.Tasks.Names.ReleaseNotes;
+
+            if (dependentOn == app.Tasks.Names.ReleaseNotes && !app.PrepareReleaseNotes)
+                dependentOn = app.Tasks.Names.Version;
+
+            builder
+                .IsDependentOn(dependentOn)
+                .WithCriteria(() => !app.SkipRemainingTasks && !app.Errored)
+                .OnError(ex => { app.SetError(builder, ex); });
+
+            // Bump dependee back based on app config
+            if (!string.IsNullOrEmpty(dependee))
+            {
+                if (dependee == app.Tasks.Names.ReleaseNotes && !app.PrepareReleaseNotes)
+                    dependee = app.Tasks.Names.AssemblyInfo;
+
+                if (dependee == app.Tasks.Names.AssemblyInfo && !app.UpdateAssemblyInfo)
+                    dependee = app.Tasks.Names.Clean;
+
+                if (dependee == app.Tasks.Names.PreBuild && !app.UsePreBuildTask)
+                    dependee = app.Tasks.Names.Build;
+
+                if (dependee == app.Tasks.Names.PostBuild && !app.UsePostBuildTask)
+                    dependee = app.Tasks.Names.Test;
+
+                if (dependee == app.Tasks.Names.Commit && !app.UseCommitTask)
+                    dependee = app.Tasks.Names.Push;
+
+                builder.IsDependeeOf(dependee);
+            }
+
+            return builder;
         }
     }
 }

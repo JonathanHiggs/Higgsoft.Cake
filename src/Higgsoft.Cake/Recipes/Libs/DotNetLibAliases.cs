@@ -11,6 +11,7 @@ using Cake.Common.Tools.NuGet.Pack;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
+using Cake.Core.Scripting;
 
 namespace Higgsoft.Cake.Recipes.Libs
 {
@@ -227,26 +228,26 @@ namespace Higgsoft.Cake.Recipes.Libs
             {
                 case "InfoOnly":
                 case "Build-InfoOnly":
-                    return lib.Tasks.Info.Task.Name;
+                    return lib.Tasks.Names.Info;
 
                 case "BuildAll":
                 case "Build-BuildAll":
                     return lib.UsePostBuildTask 
-                        ? lib.Tasks.PostBuild.Task.Name 
-                        : lib.Tasks.Build.Task.Name;
+                        ? lib.Tasks.Names.PostBuild
+                        : lib.Tasks.Names.Build;
 
                 case "TestAll":
                 case "Build-TestAll":
-                    return lib.Tasks.Test.Task.Name;
+                    return lib.Tasks.Names.Test;
 
                 case "PackageAll":
                 case "Build-PackageAll":
-                    return lib.Tasks.Package.Task.Name;
+                    return lib.Tasks.Names.Package;
 
                 case "RunAll":
                 case "Build-RunAll":
                 default:
-                    return lib.Tasks.Push.Task.Name;
+                    return lib.Tasks.Names.Push;
 
             }
         }
@@ -306,10 +307,10 @@ namespace Higgsoft.Cake.Recipes.Libs
             CakeTaskBuilder dependee)
         {
             if (dependentOn is null)
-                throw new ArgumentNullException($"Dependent task is null");
+                throw new ArgumentNullException("Dependent task is null");
 
             if (dependee is null)
-                throw new ArgumentNullException($"Dependee task is null");
+                throw new ArgumentNullException("Dependee task is null");
 
             builder.ConfigTaskFor(lib, dependentOn.Task.Name, dependee.Task.Name);
             return builder;
@@ -330,7 +331,7 @@ namespace Higgsoft.Cake.Recipes.Libs
             string dependentOn,
             string dependee = null)
         {
-            // Bump depencency forward based on lib config
+            // Bump depencent task forward based on recipe config
             if (dependentOn == lib.Tasks.Names.Commit && !lib.UseCommitTask)
                 dependentOn = lib.Tasks.Names.Package;
 
