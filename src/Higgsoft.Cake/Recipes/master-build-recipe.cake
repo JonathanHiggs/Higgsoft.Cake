@@ -27,7 +27,7 @@ Build.Tasks.Check = Task("Build-Check")
     .Does(() => Check(Build.CheckSettings));
 
 Build.Tasks.Push = Task("Build-Push")
-    .WithCriteria(() => Build.EnableCommits && Build.EnablePush && !Build.Local)
+    .WithCriteria(() => Build.ShouldPush)
     .Does(() => BuildPush());
 
 

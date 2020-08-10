@@ -226,7 +226,6 @@ namespace Higgsoft.Cake.Recipes
         /// <param name="context">Cake runtime context</param>
         [CakeMethodAlias]
         public static void BuildPush(this ICakeContext context)
-            // ToDo: check and skip if single recipe failure
             => context.PushChanges(new PushSettings {
                 Remote = Build.GitRemoteName,
                 Tags = Build.EnableTags });

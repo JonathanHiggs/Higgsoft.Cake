@@ -100,6 +100,7 @@ namespace Higgsoft.Cake.Recipes
             // ToDo: if errored after commit task need to revert the commit
             if (recipe.Errored || recipe.SkipRemainingTasks || Build.Local)
                 context.RevertChanges(recipe.RevertSettings);
+                // ToDo: add logic for reverting each stage
         }
 
 

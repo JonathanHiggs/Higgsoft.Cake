@@ -142,6 +142,13 @@ namespace Higgsoft.Cake.Recipes
         /// </summary>
         public static bool EnablePush { get; set; } = true;
 
+
+        /// <summary>
+        /// Gets a flag that determines whether to push commits to the remote
+        /// </summary>
+        public static bool ShouldPush
+            => EnableCommits && EnablePush && !Local;
+
         #endregion
 
 
