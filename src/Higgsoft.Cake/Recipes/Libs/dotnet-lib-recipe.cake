@@ -68,6 +68,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .ConfigTaskFor(lib, names.Test)
         .DoesForEach(lib.RestorePublishSettings, settings => DotNetLibPublish(lib, settings));
 
+    // ToDo: swap order of package and commit
     tasks.Package = Task(names.Package)
         .ConfigTaskFor(lib, names.Publish)
         .Does(() => DotNetLibPackage(lib));
@@ -81,13 +82,11 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .ConfigTaskFor(lib, names.Commit)
         .Does(() => DotNetLibPush(lib));
 
-    // ToDo: manually setup the cleanup so it doesn't skip
     tasks.CleanUp = Task(names.CleanUp)
-        .ConfigTaskFor(
-            lib,
-            DotNetLibCleanUpDependency(lib),
-            DotNetLibCleanUpDependee(lib))
-        .Does(() => RecipeCleanUp(lib));
+        .IsDependentOn(DotNetLibCleanUpDependency(lib))
+        .IsDependeeOf(DotNetLibCleanUpDependee(lib))
+        .Does(() => RecipeCleanUp(lib))
+        .OnError(ex => lib.SetError(builder, ex));
 };
 
 

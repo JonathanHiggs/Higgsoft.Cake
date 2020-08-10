@@ -67,11 +67,12 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .ConfigTaskFor(app, names.Test)
         .DoesForEach(app.RestorePublishSettings, settings => DotNetAppRestorePublish(app, settings));
 
+    // ToDo: swap order of package and commit
     tasks.Package = Task(names.Package)
         .ConfigTaskFor(app, names.Publish)
         .Does(() => DotNetAppPackage(app));
 
-    if (!Build.Local && Build.EnableCommits)
+    if (app.UseCommitTask)
         tasks.Commit = Task(names.Commit)
             .ConfigTaskFor(app, names.Package)
             .Does(() => RecipeCommit(app));
@@ -80,13 +81,11 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .ConfigTaskFor(app, names.Commit)
         .Does(() => DotNetAppPush(app));
         
-    // ToDo: manually setup the cleanup so it doesn't skip
     tasks.CleanUp = Task(names.CleanUp)
-        .ConfigTaskFor(
-            app, 
-            DotNetAppCleanUpDependency(app),
-            DotNetAppCleanUpDependee(app))
-        .Does(() => RecipeCleanUp(app));
+        .IsDependentOn(DotNetAppCleanUpDependency(app))
+        .IsDependeeOf(DotNetAppCleanUpDependee(app))
+        .Does(() => RecipeCleanUp(app))
+        .OnError(ex => app.SetError(ex));
 };
 
 

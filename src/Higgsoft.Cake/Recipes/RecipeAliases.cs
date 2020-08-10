@@ -97,6 +97,7 @@ namespace Higgsoft.Cake.Recipes
         [CakeMethodAlias]
         public static void RecipeCleanUp(this ICakeContext context, Recipe recipe)
         {
+            // ToDo: if errored after commit task need to revert the commit
             if (recipe.Errored || recipe.SkipRemainingTasks || Build.Local)
                 context.RevertChanges(recipe.RevertSettings);
         }

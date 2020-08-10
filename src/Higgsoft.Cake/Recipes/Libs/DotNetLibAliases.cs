@@ -361,7 +361,7 @@ namespace Higgsoft.Cake.Recipes.Libs
             builder
                 .IsDependentOn(dependentOn)
                 .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
-                .OnError(ex => { lib.SetError(builder, ex); });
+                .OnError(ex => lib.SetError(builder, ex));
 
             // Bump dependee back based on lib config
             if (!string.IsNullOrEmpty(dependee))
