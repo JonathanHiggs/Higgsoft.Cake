@@ -85,7 +85,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
         .IsDependentOn(DotNetAppCleanUpDependency(app))
         .IsDependeeOf(DotNetAppCleanUpDependee(app))
         .Does(() => RecipeCleanUp(app))
-        .OnError(ex => app.SetError(ex));
+        .OnError(ex => app.SetError(names.CleanUp, ex));
 };
 
 

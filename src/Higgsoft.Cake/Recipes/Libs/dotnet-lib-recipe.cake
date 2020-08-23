@@ -86,7 +86,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         .IsDependentOn(DotNetLibCleanUpDependency(lib))
         .IsDependeeOf(DotNetLibCleanUpDependee(lib))
         .Does(() => RecipeCleanUp(lib))
-        .OnError(ex => lib.SetError(builder, ex));
+        .OnError(ex => lib.SetError(names.CleanUp, ex));
 };
 
 
