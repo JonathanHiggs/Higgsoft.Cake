@@ -75,7 +75,7 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         /// <summary>
-        /// Performs setup actions
+        /// Performs set-up actions
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="lib">Recipe configuration</param>
@@ -156,12 +156,18 @@ namespace Higgsoft.Cake.Recipes.Libs
         [CakeMethodAlias]
         public static void DotNetLibPackage(this ICakeContext context, DotNetLib lib)
         {
+            string CleanFrameworkName(string framework)
+            {
+                var index = framework.IndexOf('-');
+                return index != -1 ? framework.Substring(0, index) : framework;
+            }
+
             lib.NuGetFiles.AddRange(
                 context.GetFiles($"{lib.PublishDirectory}/**/{lib.Project}.dll")
                     .Union(context.GetFiles($"{lib.PublishDirectory}/**/{lib.Project}.pdb"))
                     .Where(f => !f.FullPath.Contains("/runtimes/"))
                     .Select(f => f.FullPath.Substring(lib.PublishDirectory.FullPath.Length + 1))
-                    .Select(f => new NuSpecContent { Source = f, Target = $"lib/{f} " }));
+                    .Select(f => new NuSpecContent { Source = f, Target = $"lib/{CleanFrameworkName(f)}" }));
 
             switch (Build.Verbosity)
             {
@@ -190,7 +196,7 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         /// <summary>
-        /// Pushes the nuget package to the remote repo
+        /// Pushes the nuget package to the remote repository
         /// </summary>
         /// <param name="context">Cake runtime context</param>
         /// <param name="lib">Recipe configuration</param>
@@ -329,11 +335,11 @@ namespace Higgsoft.Cake.Recipes.Libs
 
 
         /// <summary>
-        /// Configures the depencency, criteria and error handling for a dotnet-lib recipe task
+        /// Configures the dependency, criteria and error handling for a dotnet-lib recipe task
         /// </summary>
         /// <param name="builder">Cake task builder</param>
         /// <param name="lib"><see cref="DotNetLib"/> recipe configuration</param>
-        /// <param name="dependentOn">Depencent task name</param>
+        /// <param name="dependentOn">Dependent task name</param>
         /// <param name="dependee">Dependee task name</param>
         /// <returns></returns>
         public static CakeTaskBuilder ConfigTaskFor(
@@ -342,7 +348,7 @@ namespace Higgsoft.Cake.Recipes.Libs
             string dependentOn,
             string dependee = null)
         {
-            // Bump depencent task forward based on recipe config
+            // Bump dependent task forward based on recipe config
             if (dependentOn == lib.Tasks.Names.Commit && !lib.UseCommitTask)
                 dependentOn = lib.Tasks.Names.Package;
 
