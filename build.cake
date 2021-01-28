@@ -24,7 +24,7 @@ var lib = AddDotNetLib(lib => {
     lib.Description                 = "Cake build tools and recipes for automated .Net builds";
     lib.Solution                    = "Higgsoft.Cake";
     lib.Project                     = "Higgsoft.Cake";
-    
+
     lib.SolutionDirectory           = Directory($"{Build.GitRoot}/src");
     lib.SolutionFile                = File($"{lib.SolutionDirectory}/{lib.Solution}.sln");
     lib.ProjectFile                 = File($"{lib.SolutionDirectory}/{lib.Project}/{lib.Project}.csproj");
@@ -44,7 +44,7 @@ var lib = AddDotNetLib(lib => {
 
     lib.ProjectUrl                  = new Uri("https://github.com/JonathanHiggs/Higgsoft.Cake");
 
-    lib.AddFrameworks("net48", "netstandard2.0");
+    lib.AddFrameworks("net48", "netstandard2.0", "net5.0");
     lib.AddAuthors("Jonathan Higgs");
 
     lib.AddNuGetFiles(
