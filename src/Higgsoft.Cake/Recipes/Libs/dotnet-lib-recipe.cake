@@ -4,7 +4,7 @@
 
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.9.0
 
-#addin nuget:?package=Higgsoft.Cake&version=0.1.0
+#addin nuget:?package=Higgsoft.Cake&version=0.1.1
 
 using Higgsoft.Cake.Recipes;
 using Higgsoft.Cake.Recipes.Libs;

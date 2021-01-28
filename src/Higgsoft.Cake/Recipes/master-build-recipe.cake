@@ -2,7 +2,7 @@
 // Includes & Using
 ////////////////////
 
-#addin nuget:?package=Higgsoft.Cake&version=0.1.0
+#addin nuget:?package=Higgsoft.Cake&version=0.1.1
 #addin nuget:?package=Cake.Git&version=0.21.0
 
 using Higgsoft.Cake.Recipes;

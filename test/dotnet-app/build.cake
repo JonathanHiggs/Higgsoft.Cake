@@ -2,7 +2,7 @@
 // Includes & Using
 ////////////////////////
 
-#load nuget:?package=Higgsoft.Cake&version=0.1.0
+#load nuget:?package=Higgsoft.Cake&version=0.1.1
 
 
 //////////////////////////
