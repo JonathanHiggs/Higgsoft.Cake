@@ -22,82 +22,82 @@ namespace Higgsoft.Cake.Recipes
         public static void BuildConfigure(this ICakeContext context)
         {
             // Build args
-            Build.Target = 
+            Build.Target =
                 CoerceTarget(context.Argument("target", Build.Target));
-            
-            Build.Configuration = 
+
+            Build.Configuration =
                 context.Argument("configuration", Build.Configuration);
-            
-            Build.Verbosity = 
+
+            Build.Verbosity =
                 context.Argument("verbosity", Build.Verbosity);
-            
-            Build.Local = 
+
+            Build.Local =
                 context.Argument("local", Build.Local);
 
             // Check args
-            Build.CheckStagedChanges = 
+            Build.CheckStagedChanges =
                 context.Argument("check-staged", Build.CheckStagedChanges);
-            
-            Build.CheckUncommittedChanges = 
+
+            Build.CheckUncommittedChanges =
                 context.Argument("check-uncommitted", Build.CheckUncommittedChanges);
-            
-            Build.CheckUntrackedFiles = 
+
+            Build.CheckUntrackedFiles =
                 context.Argument("check-untracked", Build.CheckUntrackedFiles);
 
             // Git args
-            Build.GitRoot = 
+            Build.GitRoot =
                 context.GitFindRootFromPath(context.MakeAbsolute(context.Directory(".")));
-            
-            Build.GitUserName = 
+
+            Build.GitUserName =
                 context.Argument("git-username", Build.GitUserName);
-            
-            Build.GitEmail = 
+
+            Build.GitEmail =
                 context.Argument("git-email", Build.GitEmail);
-            
-            Build.GitRemoteName = 
+
+            Build.GitRemoteName =
                 context.Argument("git-remote", Build.GitRemoteName);
-            
-            Build.EnableCommits = 
+
+            Build.EnableCommits =
                 context.Argument("enable-commits", Build.EnableCommits);
-            
-            Build.EnableTags = 
+
+            Build.EnableTags =
                 context.Argument("enable-tags", Build.EnableTags);
-            
-            Build.EnablePush = 
+
+            Build.EnablePush =
                 context.Argument("enable-push", Build.EnablePush);
 
             // NuGet args
-            Build.NuGetSource = 
+            Build.NuGetSource =
                 context.Argument(
-                    "nuget-source", 
+                    "nuget-source",
                     context.EnvironmentVariable("NUGET_SOURCE") ?? Build.NuGetSource);
-            
-            Build.NuGetLocalSource = 
+
+            Build.NuGetLocalSource =
                 context.Argument(
-                    "nuget-local-source", 
+                    "nuget-local-source",
                     context.EnvironmentVariable("NUGET_LOCAL_SOURCE") ?? Build.NuGetLocalSource);
-            
-            Build.NuGetApiKey = 
+
+            Build.NuGetApiKey =
                 context.Argument("nuget-api-key", context.EnvironmentVariable("NUGET_API_KEY"));
 
             // Artefact args
-            Build.ArtefactsRepository = 
+            Build.ArtefactsRepository =
                 context.Argument(
-                    "artefacts-repo", 
+                    "artefacts-repo",
                     context.EnvironmentVariable("ARTEFACTS_REPO") ?? Build.ArtefactsRepository);
 
-            Build.ArtefactsLocalRepository = 
+            Build.ArtefactsLocalRepository =
                 context.Argument(
                     "artefacts-local-repo",
                     context.EnvironmentVariable("ARTEFACTS_LOCAL_REPO") ?? Build.ArtefactsLocalRepository);
 
             // Squirrel args
-            Build.SquirrelCentralRepository = 
+            Build.SquirrelCentralRepository =
                 context.Argument(
                     "squirrel-repo",
                     context.EnvironmentVariable("SQUIRREL_REPO") ?? Build.SquirrelCentralRepository);
 
-            Build.SquirrelLocalRepository = 
+            Build.SquirrelLocalRepository =
                 context.Argument(
                     "squirrel-local-repo",
                     context.EnvironmentVariable("SQUIRREL_LOCAL_REPO") ?? Build.SquirrelLocalRepository);

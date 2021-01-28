@@ -1,3 +1,3 @@
 ## 0.1.1
 
-- Fixed issue with cleanup task skip after failure
+- Fixed issue with clean-up task skip after failure

@@ -77,7 +77,7 @@ Action<DotNetLib> SetDotNetLibTasks = (DotNetLib lib) => {
         tasks.Commit = Task(names.Commit)
             .ConfigTaskFor(lib, names.Package)
             .Does(() => RecipeCommit(lib));
-            
+
     tasks.Push = Task(names.Push)
         .ConfigTaskFor(lib, names.Commit)
         .Does(() => DotNetLibPush(lib));

@@ -80,7 +80,7 @@ Action<DotNetApp> SetDotNetAppTasks = (DotNetApp app) => {
     tasks.Push = Task(names.Push)
         .ConfigTaskFor(app, names.Commit)
         .Does(() => DotNetAppPush(app));
-        
+
     tasks.CleanUp = Task(names.CleanUp)
         .IsDependentOn(DotNetAppCleanUpDependency(app))
         .IsDependeeOf(DotNetAppCleanUpDependee(app))

@@ -25,14 +25,14 @@ namespace Higgsoft.Cake.Recipes
         /// <summary>
         /// Gets and sets the recipe identity
         /// </summary>
-        public string Id 
+        public string Id
         {
             get => id;
             set
             {
                 id = value;
                 OnIdChanged(id);
-            } 
+            }
         }
 
 

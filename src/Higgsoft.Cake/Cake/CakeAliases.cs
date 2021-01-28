@@ -90,7 +90,7 @@ namespace Higgsoft.Cake.Cake
         /// <param name="targetDirectory">Target directory path</param>
         /// <param name="nugetPackage">NuGet package path</param>
         public static void CakeInstallPackage(
-            ICakeContext context, 
+            ICakeContext context,
             DirectoryPath targetDirectory,
             FilePath nugetPackage)
         {

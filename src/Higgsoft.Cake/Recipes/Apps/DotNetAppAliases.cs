@@ -188,8 +188,8 @@ namespace Higgsoft.Cake.Recipes.Apps
 
                 case "BuildAll":
                 case "Build-BuildAll":
-                    return app.UsePostBuildTask 
-                        ? app.Tasks.Names.PostBuild 
+                    return app.UsePostBuildTask
+                        ? app.Tasks.Names.PostBuild
                         : app.Tasks.Names.Build;
 
                 case "TestAll":

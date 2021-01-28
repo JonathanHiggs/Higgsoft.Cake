@@ -243,7 +243,7 @@ namespace Higgsoft.Cake.Recipes.Libs
 
                 case "BuildAll":
                 case "Build-BuildAll":
-                    return lib.UsePostBuildTask 
+                    return lib.UsePostBuildTask
                         ? lib.Tasks.Names.PostBuild
                         : lib.Tasks.Names.Build;
 
@@ -348,16 +348,16 @@ namespace Higgsoft.Cake.Recipes.Libs
 
             if (dependentOn == lib.Tasks.Names.PostBuild && !lib.UsePostBuildTask)
                 dependentOn = lib.Tasks.Names.Build;
-                    
+
             if (dependentOn == lib.Tasks.Names.PreBuild && !lib.UsePreBuildTask)
                 dependentOn = lib.Tasks.Names.Clean;
-                    
+
             if (dependentOn == lib.Tasks.Names.AssemblyInfo && !lib.UpdateAssemblyInfo)
                 dependentOn = lib.Tasks.Names.ReleaseNotes;
-                    
+
             if (dependentOn == lib.Tasks.Names.ReleaseNotes && !lib.PrepareReleaseNotes)
                 dependentOn = lib.Tasks.Names.Version;
-                    
+
             builder
                 .IsDependentOn(dependentOn)
                 .WithCriteria(() => !lib.SkipRemainingTasks && !lib.Errored)
@@ -368,19 +368,19 @@ namespace Higgsoft.Cake.Recipes.Libs
             {
                 if (dependee == lib.Tasks.Names.ReleaseNotes && !lib.PrepareReleaseNotes)
                     dependee = lib.Tasks.Names.AssemblyInfo;
-                        
+
                 if (dependee == lib.Tasks.Names.AssemblyInfo && !lib.UpdateAssemblyInfo)
                     dependee = lib.Tasks.Names.Clean;
-                        
+
                 if (dependee == lib.Tasks.Names.PreBuild && !lib.UsePreBuildTask)
                     dependee = lib.Tasks.Names.Build;
-                        
+
                 if (dependee == lib.Tasks.Names.PostBuild && !lib.UsePostBuildTask)
                     dependee = lib.Tasks.Names.Test;
-                        
+
                 if (dependee == lib.Tasks.Names.Commit && !lib.UseCommitTask)
                     dependee = lib.Tasks.Names.Push;
-                        
+
                 builder.IsDependeeOf(dependee);
             }
 
