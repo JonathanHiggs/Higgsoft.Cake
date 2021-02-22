@@ -1,0 +1,28 @@
+name: Build
+
+on: 
+  push:
+    brnaches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.6.0
+        with:
+          dotnet-version: '5.0.103'
+          source-url: https://nuget.pkg.github.com/jonathanhiggs/index.json
+        env:
+          NUGET_API_KEY: ${{secrets.GITHUB_TOKEN}}
+          NUGET_SOURCE: https://nuget.pkg.github.com/jonathanhiggs/index.json
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Cake Build
+        run: dotnet cake
