@@ -1,0 +1,10 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Run the Cake script
+        uses: cake-build/cake-action@1
