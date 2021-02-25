@@ -6,8 +6,8 @@
 
 ## About
 
-A [Cake](https://cakebuild.net/) extension that defines build recipes for applications and libraries that removes the 
-boilerplate logic from build scripts
+A [Cake](https://cakebuild.net/) extension that defines build recipes for applications and libraries
+ that removes the boilerplate logic from build scripts and moves to a configuration approach
 
 Recipes have a complete set of tasks needed for a fully automated build:
 * Info - Displays project build information and settings
@@ -107,6 +107,8 @@ downstream projects
 > :warning: This will rebuild the package of the same version, the build will replace the version 
 in the local repository, but any downstream projects cache the package in their local `/packages` 
 directory, so the package should be removed from that cache
+
+Using the cake bootstrapper the build is invoked like this:
 
 ```sh
 powershell "./build.ps1" --local=True --settings_skippackageversioncheck=true
